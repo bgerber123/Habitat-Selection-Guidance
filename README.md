@@ -2,7 +2,7 @@
 
 ## A repository for:
 
-Gerber, BD, Setash, C, Ivan, J and Northrup, J. *A plain language review and guidance for modeling animal habitat-selection *. 
+Gerber, BD, Setash, C, Ivan, J and Northrup, J. A plain language review and guidance for modeling animal habitat-selection. 
 
 ---
 
@@ -25,7 +25,7 @@ step-selection functions.
 
 ### Additional Files
 
-- sim.ind.movement.hsf.r: simulation of individual movement based habibtat selection
-- mean_ci_boot.r: bootsrapping function to get population (across individual) infernece
-- Covs: rasters of spatial covariates
+- `sim.ind.movement.hsf.r`: simulation of individual movement based habibtat selection
+- `mean_ci_boot.r`: bootsrapping function to get population (across individual) infernece
+- `Covs`: rasters of spatial covariates
   

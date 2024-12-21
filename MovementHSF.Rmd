@@ -180,17 +180,17 @@ We are now ready to simulate individual-level data. We will do this with the  `s
   n.avail = 100
 
 # Number of movements
-  n.time = 200	
+  n.time = 400	
 
 # Number of possible steps to choose from at each iteration- these are not available locations, this is for the simulation of the movement path  
-  n.step = 200	
+  n.step = 400	
   
 # Population (across individual) turning angle parameters for von mises distribution
   angle.mean = 0
   angle.kappa = 0.00001  
 
 # Step length rate of exponential distribution
-  step.rate = 0.1
+  step.rate = 0.2
   
 # Simulate individual-level movement-based habitat selection data
   sims =  sim.ind.movement.hsf(hsf.true=hsf.true,
@@ -556,14 +556,17 @@ Another way to look at this sensitivity is by showing the variability of the coe
 # Size of available samples per used locaiton
   n.avail2=c(2,10,20,40,60,80,100)
   
-#Save coefficients
+# Number of sample replications
+ n.sample = 20
+  
+# Save coefficients
   coef.save=NULL
   
 #Loop across available sample sizes  
   for(i in 1:length(n.avail2)){
   
   #re-sample each available sample size 20 times  
-  for (z in 1:20){  
+  for (z in 1:n.sample){  
   #Loop through each used location and reduce the number of available samples
     ind.dat=NULL
   for(j in 1:n.step){
@@ -587,16 +590,16 @@ Another way to look at this sensitivity is by showing the variability of the coe
 ```
 
 ```{r plot.sensitive, class.source = "fold-hide"}
-one = data.frame(N.Avail=rep(n.avail2,each=20),
-                 Sample=rep(1:20,length(n.avail2)),
+one = data.frame(N.Avail=rep(n.avail2,each=n.sample),
+                 Sample=rep(1:n.sample,length(n.avail2)),
                  beta = coef.save[,1]
                 )
-two = data.frame(N.Avail=rep(n.avail2,each=20),
-                 Sample=rep(1:20,length(n.avail2)),
+two = data.frame(N.Avail=rep(n.avail2,each=n.sample),
+                 Sample=rep(1:n.sample,length(n.avail2)),
                  beta = coef.save[,2]
                 )
-three = data.frame(N.Avail=rep(n.avail2,each=20),
-                 Sample=rep(1:20,length(n.avail2)),
+three = data.frame(N.Avail=rep(n.avail2,each=n.sample),
+                 Sample=rep(1:n.sample,length(n.avail2)),
                  beta = coef.save[,3]
                 )
 plot.data = rbind(one,two,three)

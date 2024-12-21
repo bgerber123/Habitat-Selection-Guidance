@@ -527,7 +527,7 @@ displayed. To show the code, select ‘show’.</p>
   library(knitr)
   library(amt)
   library(remotes)
-
+  library(ggplot2)
 # A github repository to install
 #  remotes::install_github(&quot;Pakillo/grateful&quot;)
   library(grateful)
@@ -543,7 +543,7 @@ Individual’s effects are assumed to come from a distribution of effects
 that can be characterized by a mean and standard deviation (i.e., random
 effect).</p>
 <pre class="r fold-hide"><code># Number of Sampled individuals (e.g., tracked via GPS telemetry)
-  n.indiv=20
+  n.indiv = 20
 
 # Define the true population-level coefficients
 # and use these to simulate individual-level coefficients
@@ -558,20 +558,20 @@ effect).</p>
     beta1.sd = 0.2
     
     set.seed(543543)
-    beta1=rnorm(n.indiv, 
-                mean = beta1.mu,
-                sd = beta1.sd
-                )
+    beta1 = rnorm(n.indiv, 
+                  mean = beta1.mu,
+                  sd = beta1.sd
+                  )
   # No selection at population-level
   # Wide variation among individuals  
     beta2.mu = 0
     beta2.sd = 1
     
     set.seed(5435431)
-    beta2=rnorm(n.indiv, 
-                mean = beta2.mu,
-                sd = beta2.sd
-                )
+    beta2 = rnorm(n.indiv, 
+                  mean = beta2.mu,
+                  sd = beta2.sd
+                  )
   
   # Selection for this feature at population-level 
   # Low variation among individuals
@@ -579,16 +579,17 @@ effect).</p>
     beta3.sd = 0.2
     
     set.seed(1543543)
-    beta3=rnorm(n.indiv, 
-                mean = beta3.mu,
-                sd = beta3.sd
-                )
+    beta3 = rnorm(n.indiv, 
+                  mean = beta3.mu,
+                  sd = beta3.sd
+                  )
 
 # Combine coefficients and plot these values
-  betas=data.frame(b0 = beta0, 
-                   b1 = beta1,
-                   b2 = beta2,
-                   b3 = beta3)</code></pre>
+  betas = data.frame(b0 = beta0, 
+                     b1 = beta1,
+                     b2 = beta2,
+                     b3 = beta3
+                     )</code></pre>
 <pre class="r fold-hide"><code>  par(mfrow=c(3,1))
   hist(betas[,2],xlab=bquote(beta[1]),xlim=c(-3,3),main=&quot;True Individual Coeficient Values&quot;,breaks=10,freq=FALSE)
   abline(v=beta1.mu,lwd=2,col=2)
@@ -612,13 +613,13 @@ spatial (x-y) data from explicit spatial layers, but we will connect how
 these data represent typical GPS data and setup when working with
 spatial variables.</p>
 <pre class="r fold-hide"><code># How many used samples per individual   
-  n.used &lt;- 500
+  n.used = 500
 
 # Ratio of used:available
-  m&lt;-10 
+  m = 10 
   
 #Create available samples  
-  n&lt;-n.used*m 
+  n=n.used*m 
 
 # Create spatial covariate variables
 # dist.dev = Euclidean distance to nearest development
@@ -627,19 +628,20 @@ spatial variables.</p>
   
 # These are continuous variables that are scaled to a mean of 0 and stdev of 1
   set.seed(51234) 
-  x&lt;-data.frame(dist.dev=rnorm(n),forest=runif(n),shrub=runif(n)) 
+  x = data.frame(dist.dev=rnorm(n),forest=runif(n),shrub=runif(n)) 
 
 # Create one dataset per each individual with equal
 # Note that in the simulation function (simulateUsedAvail) we are specif icing 
 # a link of &#39;log&#39; indicating we will be fitting a model to estimate 
 #  RELATIVE habitat selection rather than absolute selection.
 
-  sims=apply(betas,1,FUN=function(b){
-            ResourceSelection::simulateUsedAvail(data=x,
-                                                 parms=b,
-                                                 n.used=n.used,
-                                                 m=m,
-                                                 link=&quot;log&quot;) 
+  sims = apply(betas,1,FUN=function(b){
+               ResourceSelection::simulateUsedAvail(data=x,
+                                                    parms=b,
+                                                    n.used=n.used,
+                                                    m=m,
+                                                    link=&quot;log&quot;
+                                                    ) 
     })
   
 # Check the dimensions of the data  
@@ -683,7 +685,7 @@ We will use the objects <code>sims</code> and <code>sims2</code> below
 when we want to fit models to each individual separately and together,
 respectively.</p>
 <pre class="r"><code># Combine data into a single data.frame
-  sims2 &lt;- do.call(&quot;rbind&quot;, sims)
+  sims2 = do.call(&quot;rbind&quot;, sims)
   head(sims2)</code></pre>
 <pre><code>##      status    dist.dev      forest     shrub
 ## 1969      1  0.14004930 0.162122994 0.2868476
@@ -695,8 +697,8 @@ respectively.</p>
 <pre class="r"><code>  dim(sims2)</code></pre>
 <pre><code>## [1] 110000      4</code></pre>
 <pre class="r"><code>#Create ID vector for individual&#39;s data
-  ID=rep(1:n.indiv,each=nrow(sims[[1]]))
-  sims2$ID=ID
+  ID = rep(1:n.indiv, each = nrow(sims[[1]]))
+  sims2$ID = ID
   head(sims2)</code></pre>
 <pre><code>##      status    dist.dev      forest     shrub ID
 ## 1969      1  0.14004930 0.162122994 0.2868476  1
@@ -709,7 +711,7 @@ respectively.</p>
 <pre><code>## [1] 110000      5</code></pre>
 <pre class="r"><code># Create a vector to weight the 0&#39;s by 1000 and the 1&#39;s by 1
 # This is discussed below  (see manuscript section 10. The model being approximated)
-  sims2$weight &lt;- 1000^(1-sims2$status)</code></pre>
+  sims2$weight = 1000^(1-sims2$status)</code></pre>
 </div>
 </div>
 <div id="manuscript-sections" class="section level2">
@@ -806,7 +808,7 @@ Aarts, 2023</a>.</p>
 <p>Let’s fit a model to one individual’s used and available data and
 discuss the coefficients.</p>
 <pre class="r"><code>#We will use data from individual #20
-  indiv.data20=sims[[20]]
+  indiv.data20 = sims[[20]]
 
 # Let&#39;s look at the data to remind us what it is
   head(indiv.data20)</code></pre>
@@ -817,14 +819,13 @@ discuss the coefficients.</p>
 ## 2363      1 -1.3261416 0.9622746 0.9805034
 ## 1674      1 -0.7316487 0.6683905 0.1342194
 ## 4756      1 -2.3376280 0.9587345 0.1744920</code></pre>
-<pre class="r"><code># We are now ready to approximate our true model using the generaled linear modeling
-# machinery of logistic regression. We will do this using two different packages and functions.
+<pre class="r"><code># We are now ready to approximate our true model using the generaled linear modeling machinery of logistic regression. We will do this using two different packages and functions.
   
 # Here we are using the glmmTMB function in package glmmTMB 
 # We have related our response variable of the used and available sample (status)
 # to our covariates. This is an additive model, as opposed to having interactions.  
   model1 = glmmTMB::glmmTMB(status ~ dist.dev+forest+shrub, 
-                            family=binomial(), 
+                            family = binomial(), 
                             data = indiv.data20 
                             )
 
@@ -886,9 +887,9 @@ not zero (p-value = 8.2627753^{-7}).</p>
 the logistic regression model. For example, the <code>glm</code>
 function in the <code>stats</code> package</p>
 <pre class="r"><code>  model1.glm = stats::glm(status ~ dist.dev+forest+shrub, 
-                            family=binomial(), 
-                            data = indiv.data20 
-                            )
+                          family = binomial(), 
+                          data = indiv.data20 
+                          )
   summary(model1.glm)</code></pre>
 <pre><code>## 
 ## Call:
@@ -924,7 +925,7 @@ function in the <code>stats</code> package</p>
 ##     class(m) &lt;- c(&quot;fit_logit&quot;, &quot;glm&quot;, class(m))
 ##     m
 ## }
-## &lt;bytecode: 0x000002395eb315e8&gt;
+## &lt;bytecode: 0x0000029ad8d4e070&gt;
 ## &lt;environment: namespace:amt&gt;</code></pre>
 <p><strong>Relative Selection</strong></p>
 <p>How do we quantitatively evaluate two locations in terms of habitat
@@ -935,7 +936,7 @@ al. 2021</a>.</p>
 with that of a location far from development (dist.dev = 2) and also at
 high forest but low shrub cover (forest =2, shrub = -2).</p>
 <pre class="r"><code># Get estimates without the intercept
-  coef=fixef(model1)[[1]][-1]
+  coef = fixef(model1)[[1]][-1]
 
   RS = exp(-2*coef[1] + 2*coef[2] + 2*coef[3]) / exp(2*coef[1] + 2*coef[2] + -2*coef[3])
   RS</code></pre>
@@ -969,14 +970,20 @@ selection is the log-link and no the logit-link, which is the default
 when fitting logistic regression models.</p>
 <pre class="r"><code># Force the intercept to be zero without any error
   model1$fit$par[1] = 0
-  model1$sdr$par.fixed[1]=0
-  model1$sdr$cov.fixed[1,]=0
-  model1$sdr$cov.fixed[,1]=0
+  model1$sdr$par.fixed[1] = 0
+  model1$sdr$cov.fixed[1,] = 0
+  model1$sdr$cov.fixed[,1] = 0
 
 # Create the dataframe for the combinations of variables for prediction  
-  newdata=data.frame(dist.dev=seq(-2,2,by=0.1),forest=0,shrub=0)
+  newdata=data.frame(dist.dev = seq(-2,2,by=0.1),
+                     forest = 0,
+                     shrub = 0
+                     )
 # Next, predict 
-  preds = predict(model1,type=&quot;link&quot;,newdata=newdata, se.fit = TRUE)
+  preds = predict(model1,type = &quot;link&quot;,
+                  newdata = newdata, 
+                  se.fit = TRUE
+                  )
 # Use the Normal Approximation to get confidence intervals (other approachces are possible too!)  
   preds$LCL = preds$fit-1.96*preds$se.fit
   preds$UCL = preds$fit+1.96*preds$se.fit
@@ -1018,25 +1025,25 @@ locations are added to the available sample. Essentially, we are going
 to consider the effect of assuming these new locations are available to
 this individual.</p>
 <pre class="r"><code># Create a new set of (small) available locations 
-  n.avail.new=50
+  n.avail.new = 50
   set.seed(215464)
-  avail.new = data.frame(status=rep(0,n.avail.new),
-                         dist.dev=rnorm(n.avail.new,-0.5,3),
-                         forest=rnorm(n.avail.new,0.5,3),
-                         shrub=rnorm(n.avail.new,1.5,3)
+  avail.new = data.frame(status = rep(0,n.avail.new),
+                         dist.dev = rnorm(n.avail.new,-0.5,3),
+                         forest = rnorm(n.avail.new,0.5,3),
+                         shrub = rnorm(n.avail.new,1.5,3)
                         )
 
 # Append the new data to the original data
-  indiv.data20.appended=rbind(indiv.data20,avail.new)
+  indiv.data20.appended = rbind(indiv.data20,avail.new)
 
 # Fit the same model with appended data
-  model1.appended = glmmTMB(status ~ dist.dev + forest + shrub , 
-                            family=binomial(), 
+  model1.appended = glmmTMB(status ~ dist.dev + forest + shrub, 
+                            family = binomial(), 
                             data = indiv.data20.appended 
                             )
 # Re-fit the original data
     model1 = glmmTMB::glmmTMB(status ~ dist.dev+forest+shrub, 
-                              family=binomial(), 
+                              family = binomial(), 
                               data = indiv.data20 
                             )
   
@@ -1044,7 +1051,7 @@ this individual.</p>
   coef.df = rbind(fixef(model1)[[1]][-1],
                   fixef(model1.appended)[[1]][-1]
                   )
-  colnames(coef.df)= c(&quot;dist.dev&quot;,&quot;forest&quot;,&quot;shrub&quot;)
+  colnames(coef.df) = c(&quot;dist.dev&quot;,&quot;forest&quot;,&quot;shrub&quot;)
   rownames(coef.df) = c(&quot;Original Data&quot;,&quot;Data with Inaccessible&quot;)
   knitr::kable(coef.df)  </code></pre>
 <table>
@@ -1091,24 +1098,24 @@ range (if it chooses), 2 minutes is certainly not enough time. Thus, we
 have two data points really close in space and time for every 4 hour
 interval.</p>
 <pre class="r"><code># Lets use indidual 7&#39;s data
-  indiv.data7=sims[[7]]
+  indiv.data7 = sims[[7]]
 
 # Find the used locations
-  index1=which(indiv.data7$status==1)
+  index1 = which(indiv.data7$status==1)
 
 # Replicate the used locations 
-  indiv.data7.replicated=rbind(indiv.data7,
-                                indiv.data7[index1,]
+  indiv.data7.replicated = rbind(indiv.data7,
+                                 indiv.data7[index1,]
                                 )
 
   fit.replicated = glmmTMB(status ~ dist.dev + forest + shrub  , 
-                           family=binomial(), 
+                           family = binomial(), 
                            data = indiv.data7.replicated, 
                            )
 
 # Fit the original data
     model1 = glmmTMB::glmmTMB(status ~ dist.dev+forest+shrub, 
-                              family=binomial(), 
+                              family = binomial(), 
                               data = indiv.data7 
                             )
   
@@ -1229,32 +1236,35 @@ thing.</p>
   indiv.dat1 = sims[[1]]
 
 # index the used (1) and available (0) data
-  index.0=which(indiv.dat1==0)
-  index.1=which(indiv.dat1==1)
+  index.0 = which(indiv.dat1==0)
+  index.1 = which(indiv.dat1==1)
 
 # Create a sequence of the number of available locations to consider
-  n.available=seq(10,length(index.0),by=100)
+  n.available = seq(10,length(index.0),by=100)
 
 # Create storage objects  
-  coef.save=NULL
+  coef.save = NULL
 
 # Loop through and modify the data and fit each model with increasing 
 # number of available samples
-for(i in 1:length(n.available)){
-  dat.temp = rbind(indiv.dat1[index.1,],
-                   indiv.dat1[index.0[1:n.available[i]],])
+  for(i in 1:length(n.available)){
+    dat.temp = rbind(indiv.dat1[index.1,],
+                     indiv.dat1[index.0[1:n.available[i]],]
+                     )
   
   #Create the weighting vector (a 1 for each 1 and a 1000 for each 0)
   dat.temp$weight = 1000^(1-dat.temp$status)
   
-  model.fit &lt;-  glmmTMB(status ~ dist.dev+forest+shrub, 
-                        family=binomial(), 
+  model.fit =  glmmTMB(status ~ dist.dev+forest+shrub, 
+                        family = binomial(), 
                         data =  dat.temp,
                         weight = weight # add the weighting vector
                         )
   
 
-  coef.save=rbind(coef.save,fixef(model.fit)[[1]])
+  coef.save = rbind(coef.save,
+                    fixef(model.fit)[[1]]
+                  )
 }
 
 coef.save = data.frame(n.available,coef.save)
@@ -1275,6 +1285,83 @@ until the available samples are above 4000. In contrast, we can see the
 intercept just keep getting smaller and smaller because our available
 sample size is getting larger and larger. The intercept is not
 biologically meaningful.</p>
+<p>Another way to look at this sensitivity is by showing the variability
+of the coefficients within and across different sizes of available
+samples.</p>
+<pre class="r"><code># Size of available samples per used locaiton
+  n.avail2 = c(10,50,100,1000,2000,4000)
+  
+# Number of sample replications
+ n.sample = 20
+
+#Save coefficients
+  coef.save=NULL
+  
+#Loop across available sample sizes  
+  for(i in 1:length(n.avail2)){
+  
+  #re-sample each available sample size 20 times  
+  for (z in 1:n.sample){
+  #Loop through each used location and reduce the number of available samples
+  # and do this n.sample times
+    ind.dat=NULL
+
+    dat.temp = rbind(indiv.dat1[index.1,],
+                     indiv.dat1[sample(index.0,n.avail2[i]),]
+                     )
+    
+  #Create the weighting vector (a 1 for each 1 and a 1000 for each 0)
+  dat.temp$weight = 1000^(1-dat.temp$status)
+  
+  model.fit =  glmmTMB(status ~ dist.dev+forest+shrub, 
+                        family = binomial(), 
+                        data =  dat.temp,
+                        weight = weight # add the weighting vector
+                        )
+  
+  coef.save= rbind(coef.save, 
+                   model.fit$fit$par
+                   )
+  }#end z sample loop
+}#end i loop</code></pre>
+<pre class="r fold-hide"><code>one = data.frame(N.Avail = rep(n.avail2,each = n.sample),
+                 Sample = rep(1:n.sample,length(n.avail2)),
+                 beta = coef.save[,1]
+                )
+two = data.frame(N.Avail = rep(n.avail2,each = n.sample),
+                 Sample = rep(1:n.sample,length(n.avail2)),
+                 beta = coef.save[,2]
+                )
+three = data.frame(N.Avail = rep(n.avail2,each = n.sample),
+                 Sample = rep(1:n.sample,length(n.avail2)),
+                 beta = coef.save[,3]
+                )
+four = data.frame(N.Avail = rep(n.avail2,each = n.sample),
+                 Sample = rep(1:n.sample,length(n.avail2)),
+                 beta = coef.save[,4]
+                )
+
+plot.data = rbind(one,two,three,four)
+plot.data$Name = c(rep(&quot;Intercept&quot;,nrow(one)),
+                   rep(&quot;dist.dev&quot;,nrow(one)),
+                   rep(&quot;forest&quot;,nrow(one)),
+                   rep(&quot;shrub&quot;,nrow(one))
+                 )
+
+plot.data$N.Avail = as.factor(plot.data$N.Avail)
+
+
+colnames(plot.data) = c(&quot;N.Available.Sample&quot;,&quot;Sample&quot;,&quot;Coeficient.Estiamte&quot;,&quot;Name&quot;)
+
+ggplot2::ggplot(plot.data, aes(N.Available.Sample, Coeficient.Estiamte, fill=factor(Name))) +
+  theme_bw()+
+  geom_boxplot()</code></pre>
+<p><img role="img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABUAAAAPACAMAAADDuCPrAAABYlBMVEUAAAAAADoAAGYAOjoAOmYAOpAAZpAAZrYAv8QzMzM6AAA6OgA6Ojo6OmY6OpA6ZmY6ZpA6ZrY6kJA6kLY6kNtNTU1NTW5NTY5Nbo5NbqtNjshmAABmADpmOgBmOjpmOpBmZgBmZjpmZmZmZpBmkGZmkJBmkLZmkNtmtrZmtttmtv9uTU1ubo5ujqtujshuq+R8rgCOTU2Obk2Obm6Oq6uOyOSOyP+QOgCQOjqQZjqQZmaQZpCQkGaQkLaQtraQttuQ2/+rbk2rjm6ryOSr5P+2ZgC2Zjq2Zma2kDq2kGa2kJC2tma2tpC2tra2ttu229u22/+2///HfP/Ijk3Ijm7IyKvI5P/I///bkDrbkGbbtmbbtpDbtrbbttvb25Db27bb29vb2//b///kq27kyI7kyKvk///r6+v4dm3/tmb/yI7/25D/27b/29v/5Kv/5Mj/5OT//7b//8j//9v//+T///+H8GMsAAAACXBIWXMAAB2HAAAdhwGP5fFlAAAgAElEQVR4nO2di58c5XlmSyBFq0EO0lqDsRXYRYlJQDFenF0T2PVyWQ+BZAmwSuyxyC5GbGBHIyBi6P9/uy59v/f7Pl1Plc75/WzNdPdUH7XmO9Tlq6piAAAAe1G0LQAA0FUIKADAnhBQAIA9IaAAAHtCQAEA9oSAAgDsCQEFANgTAgoAsCcEFABgTwgoAMCeEFAAgD0hoAAAe0JAAQD2RB/QawDwJCBviSEHCKh4+V9/LX6DKPaCGCZgbygXJKAaCKi7IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAkEVI69IIYJ2BsSUAlPVkCvXWvhX9l+aGGYgL0hAZXwRAX02rU2Cmo/tDBMwN6QgEp4kgJ67VorBbUfWhgmYG9IQCU8QQG9dq2dgtoPLQwTsDckoBIIqBz7oYVhAvaGBFQCAZVjP7QwTMDekIBKIKBy7IcWhgnYGxJQCU9QQDmItAoM49gbElAJT1JAmca0Agzj2BsSUAlPVECZSL8cDOPYGxJQCU9WQFvBXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCagEAirHXhDDBOwNCaiEAwT0awDoPQRUA2ug7oIYJmBvyBqoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmoBAIqx14QwwTsDQmohO4FdP7fid/cMBjGsTckoBIIqBx7QQwTsDckoBIIqBx7QQwTsDckoBIIqBx7QQwTsDckoBIIqBx7QQwTsDckoBIIqBx7QQwTsDckoBIIqBx7QQwTsDck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" width="672" /></p>
+<p>We see more easily in this plot that there is high variability in the
+estimated coefficients when the available sample is small. This
+variability decreases as the available sample grows, showing how the
+estimates are stabilizing (except the intercept). The intercept
+estimates decrease in the variability but also continue to decline.</p>
 </div>
 <div id="individuals" class="section level3">
 <h3>11. Individuals</h3>
@@ -1283,16 +1370,16 @@ selection estimates. This variation is masked when data are pooled. Lets
 consider the implications of pooling all data vs fitting a model
 separately to each individual.</p>
 <pre class="r"><code># Pooled model - no consideration of individual variability
-  model.pool &lt;- glmmTMB(status ~ dist.dev + forest + shrub , 
-                        family=binomial(), 
-                        data = sims2, 
+  model.pool = glmmTMB(status ~ dist.dev + forest + shrub , 
+                       family = binomial(), 
+                       data = sims2, 
                     )
 
 
 # Separate models to each individual
-  indiv.fit = lapply(sims,FUN=function(x){
+  indiv.fit = lapply(sims, FUN = function(x){
                      glmmTMB(status ~ dist.dev + forest + shrub ,
-                     family=binomial(), 
+                     family = binomial(), 
                      data = x, 
                             )
               })
@@ -1368,11 +1455,12 @@ indiv.coef = lapply(indiv.fit,FUN=function(x){
 })
 
 #These are all coefs (1:3) for each individual 1:n.indiv
-estimates=sapply(indiv.coef,&quot;[[&quot;,1)
-LCI=sapply(indiv.coef,&quot;[[&quot;,2)
-UCI=sapply(indiv.coef,&quot;[[&quot;,3)</code></pre>
+estimates = sapply(indiv.coef,&quot;[[&quot;,1)
+LCI = sapply(indiv.coef,&quot;[[&quot;,2)
+UCI = sapply(indiv.coef,&quot;[[&quot;,3)</code></pre>
 <pre class="r fold-hide"><code>layout(matrix(c(1,2), nrow = 1, ncol = 2, byrow = TRUE),
-       width=c(2,1))
+       width=c(2,1)
+       )
 plotCI(1:n.indiv,y=estimates[1,],
        ui=UCI[1,],
        li=LCI[1,],
@@ -1469,9 +1557,9 @@ individual.</p>
 #Which columns have coeficients in coef.df
   col.locs=1:3
 
-  boot&lt;-list()
+  boot=list()
   for(i in 1:nboot){
-    boot[[i]]&lt;-apply(
+    boot[[i]]=apply(
                      coef.df[sample(nrow(coef.df), nrow(coef.df), 
                                     replace=TRUE, 
                                     prob=coef.df$freq),
@@ -1484,7 +1572,7 @@ individual.</p>
   }</code></pre>
 <p>We now want to summarize our bootstrapped results. The population
 mean and 95% lower and upper confidence intervals are outputted.</p>
-<pre class="r"><code>  boot.pop.esimates&lt;-mean_ci_boot(boot)
+<pre class="r"><code>  boot.pop.esimates=mean_ci_boot(boot)
   knitr::kable(boot.pop.esimates)</code></pre>
 <table>
 <thead>
@@ -1498,21 +1586,21 @@ mean and 95% lower and upper confidence intervals are outputted.</p>
 <tbody>
 <tr class="odd">
 <td align="left">dist.dev</td>
-<td align="right">-0.9625621</td>
-<td align="right">-1.1033896</td>
+<td align="right">-0.9605227</td>
+<td align="right">-1.1001118</td>
 <td align="right">-0.8794034</td>
 </tr>
 <tr class="even">
 <td align="left">forest</td>
-<td align="right">-0.2224560</td>
+<td align="right">-0.2426097</td>
 <td align="right">-0.6681814</td>
 <td align="right">0.2474493</td>
 </tr>
 <tr class="odd">
 <td align="left">shrub</td>
-<td align="right">1.0457020</td>
+<td align="right">1.0422650</td>
 <td align="right">0.9049891</td>
-<td align="right">1.2042720</td>
+<td align="right">1.2042919</td>
 </tr>
 </tbody>
 </table>
@@ -1526,7 +1614,7 @@ is the use of a random intercept. As described in the manuscript, this
 does not account for variation in the slope coefficients, which is
 problematic.</p>
 <pre class="r"><code># Setup HSF with logistic regression approximation - random intercept model
-  re_int &lt;- glmmTMB(status ~ dist.dev + forest + shrub  + (1|ID), 
+  re_int = glmmTMB(status ~ dist.dev + forest + shrub  + (1|ID), 
                     family=binomial(), 
                     data = sims2, 
                     doFit=FALSE
@@ -1539,10 +1627,7 @@ problematic.</p>
   re_int$mapArg = list(theta=factor(c(NA)))
   
 # Now ready to fit the model  
-  re_int &lt;- glmmTMB:::fitTMB(re_int)
-
-# Save model
-#  save(re_int,file=&quot;re_int&quot;)</code></pre>
+  re_int = glmmTMB:::fitTMB(re_int)</code></pre>
 <pre class="r"><code># The fixed components - these are the population level (across individual) effect. 
   fixef(re_int)</code></pre>
 <pre><code>## 
@@ -1604,7 +1689,7 @@ problematic.</p>
 <h4>Random intercept and slopes model</h4>
 <p>This is the recommended model structure using random effects.</p>
 <pre class="r"><code>#Fit RSF with intercept and slopes with random effect
-  re_int_slopes &lt;-  glmmTMB(status ~ dist.dev + forest + shrub  + 
+  re_int_slopes =  glmmTMB(status ~ dist.dev + forest + shrub  + 
                                      (1|ID)+ (0+dist.dev|ID) + (0+forest|ID) + (0+shrub|ID), 
                             family=binomial(), 
                             data = sims2, 
@@ -1619,9 +1704,7 @@ problematic.</p>
   re_int_slopes$mapArg = list(theta=factor(c(NA,1:3)))
   
 # Now ready to fit the model    
-  re_int_slopes &lt;- glmmTMB:::fitTMB(re_int_slopes)
-  
-#  save(re_int_slopes,file=&quot;re_int_slopes&quot;)</code></pre>
+  re_int_slopes = glmmTMB:::fitTMB(re_int_slopes)</code></pre>
 <p>Let’s look at the results</p>
 <pre class="r"><code>  fixef(re_int_slopes)</code></pre>
 <pre><code>## 
@@ -1762,20 +1845,20 @@ locations. Imagine a bird is highly selective of being in the landcover
 of forest when it is resting, but when foraging (and otherwise) selects
 against landcover in proportion to its availability.</p>
 <pre class="r"><code># Setup simulation input where there is more data from the second behavior
- n.used.behav1 &lt;- 200
- n.used.behav2 &lt;- 200
+ n.used.behav1 = 200
+ n.used.behav2 = 200
 
 # Ratio of used:available
-  m&lt;-10 
+  m=10 
   
 #Create available samples  
-  n1&lt;-n.used.behav1*m
-  n2&lt;-n.used.behav2*m 
+  n1=n.used.behav1*m
+  n2=n.used.behav2*m 
 
 # Consider a single categorical variable of forest and not-forest
   set.seed(51234) 
-  x1&lt;-data.frame(forest=rbinom(n1,1,0.4))
-  x2&lt;-data.frame(forest=rbinom(n2,1,0.4)) 
+  x1=data.frame(forest=rbinom(n1,1,0.4))
+  x2=data.frame(forest=rbinom(n2,1,0.4)) 
 
 # Intercept and effect of forest
   parms.behav1=c(0.5,2) # the 2 indicates selection
