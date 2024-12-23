@@ -1,11 +1,16 @@
 ---
-title: "Movement-based Habitat Selection Guidance <br> (in practice)"
+title: "Movement-based Habitat Selection <br> Guidance  (in practice)"
 author: "Brian D. Gerber"
 date: "2024-12-18"
 output: 
+  github_document:
+    html_preview: FALSE
   html_document:
     toc: true
+    toc_float: true
+    number_sections: true
     code_folding: show
+    keep_md: true
 ---
 
 <style type="text/css">
@@ -58,13 +63,11 @@ First, load required R packages, source two local functions, and load an object 
 # Source simulation function
   source("sim.ind.movement.hsf.r")
 
-# Source bootstapping function
+# Source bootstrapping function
   source("mean_ci_boot.r")
 
 # Load spatial covariates stored in a save R object
   load("Covs")
-  
-
 ```
 
 ### Simulate data
@@ -175,7 +178,7 @@ Now, we will use the spatial covariates (`covs`) and true individual-level coeff
 
 We are now ready to simulate individual-level data. We will do this with the  `sim.ind.movement.hsf` function that is sourced from the file with the same name.
 
-```{r simualte.data, cache=TRUE}
+```{r simulate.data, cache=TRUE}
 # Set number of available samples per used
   n.avail = 100
 
@@ -234,12 +237,12 @@ We now want to package are individual simulated data into a single data frame to
   dim(sims2)
 
 # Create ID vector for individual's data
-  ID=rep(1:n.indiv,each=nrow(sims$indiv[[1]]))
+  ID = rep(1:n.indiv,each=nrow(sims$indiv[[1]]))
   sims2$ID=ID
 
   
 # Create new strata
-  sims2$indiv.id.strata=unique(sims2$ID+sims2$strata*100)
+  sims2$indiv.id.strata = unique(sims2$ID+sims2$strata*100)
 
 # The number of unique identifiers needed
 # n.step*n.indiv
@@ -362,7 +365,6 @@ We can see the estimated coefficients are all the same.
 
 [Muff et al. 2019](https://doi.org/10.1111/1365-2656.13087) demonstrated the equivalence between the conditional logistic regression model and Poisson regression model with stratum-specific fixed intercepts. We can fit this model using the `glmmTMB` package, which has computational advantages over fitting the conditional logistic regression model. The key to this implementation is that we want to include stratum as part of the linear combination of variables wrapped in the function `strata` to estimate fixed effect intercepts, or do the same procedure in a random effect implementation but without shrinkage by fixing the variance to a large value.
 
-
 ```{r first.fit.inference.poisson.tmb}
 # Fit the model with fixed effect stratum-specific intercepts
 	model1.tmb=glmmTMB(status ~ dist.dev+forest+shrub+strata(strata), 
@@ -372,8 +374,8 @@ We can see the estimated coefficients are all the same.
 
 # Or using a random effect with fixed variance
 	model1.tmb2=glmmTMB(status ~ dist.dev+forest+shrub + (1| strata), 
-	                    data=indiv.data1,
-	                    family=poisson,
+	                    data = indiv.data1,
+	                    family = poisson,
 	                    doFit = FALSE
 	                   )
 
@@ -939,7 +941,7 @@ Another thing to notice is that the population level effect for forest is not st
   abline(h=pop.coef.popModel$conf.high[2],lwd=3,col=2,lty=4)
 ```
 
-Our plot shows the individual effects of `forest` (vertical lines) along with the population-level mean and confidence intervals (horizontal lines). What is clear is that the reason there is no statistically clear difference of the population-level effect from zero is because there is a wide range of effects across individuals. Some individuals have slightly positive coefficients and some have slightly negative. Since these are generally equal, they balance out to a population-level effect of zero. The story is more complicated! To decide on statistical clarity between an individidual's effect and the population, you can go back to the confidence intervals of the estimated effect differences. 
+Our plot shows the individual effects of `forest` (vertical lines) along with the population-level mean and confidence intervals (horizontal lines). What is clear is that the reason there is no statistically clear difference of the population-level effect from zero is because there is a wide range of effects across individuals. Some individuals have slightly positive coefficients and some have slightly negative. Since these are generally equal, they balance out to a population-level effect of zero. The story is more complicated! To decide on statistical clarity between an individual's effect and the population, you can go back to the confidence intervals of the estimated effect differences. 
 
 
 #### Model fitting issues with random effects
@@ -949,17 +951,17 @@ Our plot shows the individual effects of `forest` (vertical lines) along with th
 In this section we discuss ways of considering behavior in habitat selection analyses. To demonstrate the effect of ignoring behavior, we will simulate data where selection is different for two sets of animal locations. Imagine an individual is highly selective of forest cover when it is resting, but when foraging (and otherwise) selects against forest cover in proportion to its availability. 
 
 ```{r behav.sim}
-hsf.true.behav=vector("list",2)
-hsf.true.behav[[1]]=covs[[2]]*2
-hsf.true.behav[[2]]=covs[[2]]*-2
+  hsf.true.behav = vector("list",2)
+  hsf.true.behav[[1]] = covs[[2]]*2
+  hsf.true.behav[[2]] = covs[[2]]*-2
 
-  sim.behav1 =  sim.ind.movement.hsf(hsf.true=hsf.true.behav,
-                                     n.time=n.time,
-                                     n.step=n.step,
-                                     n.avail=n.avail,
-                                     angle.mean=angle.mean,
-                                     angle.kappa=angle.kappa,
-                                     step.rate=step.rate
+  sim.behav1 =  sim.ind.movement.hsf(hsf.true = hsf.true.behav,
+                                     n.time = n.time,
+                                     n.step = n.step,
+                                     n.avail = n.avail,
+                                     angle.mean = angle.mean,
+                                     angle.kappa = angle.kappa,
+                                     step.rate = step.rate
                                      )
 
 # Combine the data  
@@ -967,21 +969,20 @@ hsf.true.behav[[2]]=covs[[2]]*-2
                      sim.behav1$indiv[[2]]
                      )  
   
-#Create ID vector for the different behavioral data
-  ID=rep(1:2,each=nrow(sim.behav1$indiv[[1]]))
-  data.ignore$ID=ID
-#Create ID vector for unique strata within individual
+# Create ID vector for the different behavioral data
+  ID=rep(1:2,each = nrow(sim.behav1$indiv[[1]]))
+  data.ignore$ID = ID
+# Create ID vector for unique strata within individual
   data.ignore$indiv.id.strata=unique(data.ignore$ID+data.ignore$strata*100)
-
 ```
 
 Lets fit a model where we ignore the behavioral differences in selection and fit a single model with all the data. 
 
 ```{r behav.fit}
-model.ignore.behav =  clogit(status ~ dist.dev + strata(indiv.id.strata), 
-                             data = data.ignore
-                  )	
-summary(model.ignore.behav)
+  model.ignore.behav =  clogit(status ~ dist.dev + strata(indiv.id.strata), 
+                               data = data.ignore
+                    )	
+  summary(model.ignore.behav)
 ```
 
 We see that the estimated forest coefficient is not near the values of the true values of -2 or 2. It's somewhat in between near zero. Essentially, when animals are selecting difference habitats because of behavior, mixing across behaviors can lead to a muddle inference. 
@@ -1001,14 +1002,11 @@ We hope this vignette proided some utility. If so, let us know with an email (br
 
 Have a nice day.
 
-
-
-
 ## Software
 
 This report was generated from the R Statistical Software (v4.4.2; R Core Team 2021) using the [Markdown language](https://www.markdownguide.org/) and [RStudio](https://posit.co/products/open-source/rstudio/). The R packages used are acknowledged below. 
 
 ```{r packages.cite, eval=TRUE, echo=FALSE}
-  pkgs = cite_packages(output = "table", out.dir = ".")
+  pkgs = cite_packages(output = "table", out.dir = ".",out.format ="pdf")
   knitr::kable(pkgs)
 ```

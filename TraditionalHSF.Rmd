@@ -3,9 +3,17 @@ title: "Traditional Habitat Selection Guidance (in practice)"
 author: "Brian D. Gerber"
 date: "2024-12-13"
 output: 
+  github_document:
+    html_preview: FALSE  
   html_document:
     toc: true
+    toc_float: true
+    number_sections: true
     code_folding: show
+    keep_md: true
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding = encoding,
+  output_format = "all") })
 ---
 
 <style type="text/css">
@@ -34,7 +42,7 @@ This vignette is associated with the manuscript titled, 'A plain language review
 
 ### Environment
 
-```{r packages, results='hide',message=FALSE}
+```{r packages, results='hide',message=FALSE, class.source = "fold-hide"}
 #Load packages
   library(ResourceSelection)
   library(glmmTMB)
@@ -968,6 +976,6 @@ Have a nice day.
 This report was generated from the R Statistical Software (v4.4.2; R Core Team 2021) using the [Markdown language](https://www.markdownguide.org/) and [RStudio](https://posit.co/products/open-source/rstudio/). The R packages used are acknowledged below. 
 
 ```{r packages.cite, eval=TRUE, echo=FALSE}
-  pkgs = cite_packages(output = "table", out.dir = ".")
+  pkgs = cite_packages(output = "table", out.dir = ".",out.format ="pdf")
   knitr::kable(pkgs)
 ```
