@@ -31,7 +31,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-This vignette is associated with the manuscript titled, 'A plain language review and guidance for modeling animal habitat-selection'. We will be demonstrating some of the points made in the manuscript on fitting models to estimate parameters in a movement-based habitat selection function (HSF) or step-selection functions (SSF)). The scale of interest is the the fourth-order of selection (e.g. selection along a track within a home range). 
+This vignette is associated with the manuscript titled, 'A plain language review and guidance for modeling animal habitat-selection'. We will be demonstrating some of the points made in the manuscript on fitting models to estimate parameters in a movement-based habitat selection function (HSF) or step-selection function (SSF)). The scale of interest is the fourth-order of selection (e.g. selection along a track within a home range). 
 
 *Note:* some of the code-chunks are not automatically displayed. To show the code, select 'show'. 
 
@@ -117,7 +117,6 @@ We will consider a habitat selection analysis of individuals along a movement tr
   betas=data.frame(b1 = beta1,
                    b2 = beta2,
                    b3 = beta3)    
-    
 ```
 
 ```{r visualize true coeficients, fig.height=8,fig.width=6, class.source = "fold-hide"}
@@ -143,11 +142,14 @@ We have pre-loaded spatial covariate data. Lets look at the three covariates we 
 
 ```{r covs.plot, class.source = "fold-hide"}
 # Combine into 1 raster stack
-  covs=stack(covs[[1]], covs[[2]],covs[[3]]) 
+  covs = stack(covs[[1]], 
+               covs[[2]],
+               covs[[3]]
+               ) 
 
 # Change the extent to be larger to accommodate more realistic movements 
 #  (not required but makes me feel better)
-  extent(covs)=c(0,1000,0,1000)
+  extent(covs) = c(0,1000,0,1000)
   
 # Names of variables
   names(covs[[1]]) = 'dist.dev'
@@ -164,7 +166,7 @@ par(mfrow=c(2,3))
 ```
 
 
-Now, we will use the spatial covariates (`covs`) and true individual-level coefficients (`betas`) to create the linear combinations to create the true individual HSF (as a raster). 
+Now, we will use the spatial covariates (`covs`) and true individual-level coefficients (`betas`) to create the linear combinations to create the true individual HSF (as a raster).
 
 ```{r hsf.true}
   hsf.true = vector("list",n.indiv)
@@ -204,12 +206,15 @@ We are now ready to simulate individual-level data. We will do this with the  `s
                                angle.kappa=angle.kappa,
                                step.rate=step.rate
                                )
+```
 
-# There are two list elements
-# There is one list element for each individual in each of the two elements 
+Let's look at one individual's data. The `sims` object has two elements, one for x-y used locations )(`locs`) and one for the comiled data we will use to fit models (`indiv`). Within each of these lists are lists for each individual, one to `n.indiv`).
+
+```{r simulate.data2}
     names(sims)
 
 # Individual 1 data    
+  head(sims$locs[[1]])
   head(sims$indiv[[1]])
   table(sims$indiv[[1]]$status)
 ```
@@ -235,18 +240,18 @@ We now want to package are individual simulated data into a single data frame to
   sims2 = do.call("rbind", sims$indiv)
   head(sims2)
   dim(sims2)
+```
 
+```{r organize2. simualted.data}
 # Create ID vector for individual's data
   ID = rep(1:n.indiv,each=nrow(sims$indiv[[1]]))
   sims2$ID=ID
 
-  
 # Create new strata
   sims2$indiv.id.strata = unique(sims2$ID+sims2$strata*100)
 
 # The number of unique identifiers needed
 # n.step*n.indiv
-
   head(sims2)
   dim(sims2)  
 ```
@@ -255,42 +260,41 @@ We now want to package are individual simulated data into a single data frame to
 
 We are now ready to fit models to estimate our movement-based habitat selection parameters and demonstrate points made in the manuscript. We have organized the sections below to match with the sections of the manuscript. 
 
-### 1. What is habitat?
+### What is habitat?
 
 Definitions only.
 
-### 2. What is habitat selection?
+### What is habitat selection?
 
 Definitions only.
 
-### 3. What is a habitat-selection function?
+### What is a habitat-selection function?
 
 Definitions only. 
 
 We want to remind the reader of the nuance between a habitat selection function and the statistical model we will be fitting. The model we are fitting (as coded) and the true underlying model (weighted distribution of spatio-temporal model) is not the habitat selection function. The habitat selection function is a component of the model. We will approximate the triue model in two different ways: 1) using a conditional logistic regression model and 2) using a Poisson regression model with stratum-specific fixed intercepts ([Muff et al. 2019](https://doi.org/10.1111/1365-2656.13087)). Each approach is used to estimate parameters within the movement-based habitat selection function. We will use the same data set to show the equivalence of the estimated parameters.
 
-### 4. What about scale?
+### What about scale?
 
 Definitions only.
 
 In our data setup and analysis we will be estimating habitat selection at the fourth-order of the scales defined in Johnson (1980). 
 
-### 5. Why ‘habitat selection function’ and not ‘resource selection function’?
+### Why ‘habitat selection function’ and not ‘resource selection function’?
 
 Definitions only.
 
-### 6. Considering objectives and data collection
+### Considering objectives and data collection
 
 This is the hardest part of the whole habitat selection study. How do you decide on the what, where, and how many of sampling to answer the question at hand. Talk to many people. Ask questions to many people. 
 
 The modeling mentioned here is about differences between study goals, such as inference and prediction. Modeling for inference versus prediction is not a straightforward distinction. There are lots of opinions from the statistical folks (which are great and everyone should read them, e.g., [Shmueli, 2010](https://doi.org/10.1214/10-STS330) and [Scholz and Burner, 2022](https://arxiv.org/abs/2210.06927)) and the science philosophy folks. We reference the manuscript [Gerber and Northrup, 2020](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecy.2953) in regards to when the study goal is preditiction. Associated with this manuscript is code in the Supporting Information file (ecy2953-sup-0004-DataS1.Zip) that pertains to optimizing for predicting spatial distributions of habitat selection (i.e., making a map). This process can jeopardize inference, e.g., make the interpretation of estimated effects unreliable. In contrast, if inference is sought you should think hard about a single model that includes the most important variables for the species and for your question that you want to consider so that estimated effects and measures of uncertainty are reliable ([Bolker 2023](https://doi.org/10.32942/X2Z01P), [Tredennick et al. 2021](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecy.3336)).
 
-The data used to fit a movement-based HSF model is often individual's location is sampled at a high-fix rate, relative to the animal's speed. We curate our habitat selection data based on the movement process (e.g., step lengths and turning angles). In the above, we have simulated data with spatial locations at a standardized rate of movement and unit of time between movements. It is common for real-world telemetry data to have inconsistent times between consecutive spatial locations. It is important to standardize this time difference, otherwise the movement process parameters won't be meaningful. For example, a time difference of 30 minutes and 60 minutes are likely to produce different step lengths and thus summarizing the what is availabile on each used location will be compromised. 
+The data used to fit a movement-based HSF model is often individual's location is sampled at a high-fix rate, relative to the animal's speed. We curate our habitat selection data based on the movement process (e.g., step lengths and turning angles). In the above, we have simulated data with spatial locations at a standardized rate of movement and unit of time between movements. It is common for real-world telemetry data to have inconsistent times between consecutive spatial locations. It is important to standardize this time difference, otherwise the movement process parameters won't be meaningful. For example, a time difference of 30 minutes and 60 minutes are likely to produce different step lengths and thus summarizing the what is available on each used location will be compromised. 
 
 One way to standardize the time differences is by designing the data setup such that relocations are specified into tracks based on a threshold tolerance of allowable time between consecutive spatial locations (e.g., done in the R package amt; [Signer et al. 2019](https://doi.org/10.1002/ece3.4823)). Another way is to fit a continuous time movement model to then predict locations at a standarized interval (e.g., [Northrup et al. 2018]( https://doi.org/10.1111/gcb.13037) and [Johnsone et al. 2008](https://doi.org/10.1890/07-1032.1))
 
-
-### 7. What are habitat-selection functions used for?
+### What are habitat-selection functions used for?
 
 In this section, we discuss some mechanics of inference and prediction, as in interpreting coefficients and predicting relative habitat selection. We will walk through the basics here, but refer the reader to full in depth coverage in [Fieberg et al. 2021](https://doi.org/10.1111/1365-2656.13441) and [Avgar et al. 2017](https://doi.org/10.1002/ece3.3122). We also mention the goal of using habitat selection to predict animal abundance. Demonstrating this is beyond our work. We suggest starting with the reading of section 1.6, "When is species density a reliable reflection of habitat suitability?" of [Matthiopoulos, Fieberg, and Aarts, 2023](http://hdl.handle.net/11299/217469).
 
@@ -300,8 +304,7 @@ In this section, we discuss some mechanics of inference and prediction, as in in
 Let's fit a model to one individual's matched used and available data and discuss the estimated movement-based HSF coefficients. Remember, we have setup an available sample to be paired with a used location to control for the issues of serial dependence or autocorrelation between sequential relocations. This process has also hopefully better defined what is truly accessible to the individual at each location based on their movement dynamics (specifically, turning angle and step-length within a standardized time period). By doing this, we have focused our attention on the dynamic selection of habitat as the animal movemees through the landscape. 
 
 ```{r first.fit.inference}
-
-# We will use data from individual #1
+# We will use data from individual 1
   indiv.data1 = sims$indiv[[1]]
 
 # Let's look at the data to remind us what it is
@@ -331,7 +334,7 @@ Next, we have estimated the effect of `shrub` as `r round((model1)[[1]][3],digit
 
 The above output also conveniently shows us the exponentiation of each coefficient. This is helpful because `exp(coefficient)` "quantifies the relative intensity of use of two locations that differ by 1 standard deviation unit of [the variable] but are otherwise equivalent (i.e. they are equally available and have the same values of all other habitat covariates)" ([Fieberg et al. 2021](https://doi.org/10.1111/1365-2656.13441)).
 
-##### **Side-bar**
+##### **Other Functions**
 
 We can estimate the same parameters and get the very same estimates with other functions that implement the conditional logistic regression model. For example, the functions `fit_clogit` or `fit_ssf` in the `amt` package. These are are wrapper functions for using the `survival clogit` function. We can see what the function is doing:
 
@@ -361,23 +364,25 @@ Now lets use these functions to estimate the same coefficients as we did with `c
 
 We can see the estimated coefficients are all the same. 
 
-##### Poisson model equivalnce to the conditional logistic model
+##### **Poisson model equivalnce to the conditional logistic model**
 
 [Muff et al. 2019](https://doi.org/10.1111/1365-2656.13087) demonstrated the equivalence between the conditional logistic regression model and Poisson regression model with stratum-specific fixed intercepts. We can fit this model using the `glmmTMB` package, which has computational advantages over fitting the conditional logistic regression model. The key to this implementation is that we want to include stratum as part of the linear combination of variables wrapped in the function `strata` to estimate fixed effect intercepts, or do the same procedure in a random effect implementation but without shrinkage by fixing the variance to a large value.
 
 ```{r first.fit.inference.poisson.tmb}
 # Fit the model with fixed effect stratum-specific intercepts
-	model1.tmb=glmmTMB(status ~ dist.dev+forest+shrub+strata(strata), 
-	                   data=indiv.data1,
-	                   family=poisson
-	                   )
+	model1.tmb = glmmTMB(status ~ dist.dev + forest + 
+	                              shrub + strata(strata), 
+	                     data=indiv.data1,
+	                     family=poisson
+	                     )
 
 # Or using a random effect with fixed variance
-	model1.tmb2=glmmTMB(status ~ dist.dev+forest+shrub + (1| strata), 
-	                    data = indiv.data1,
-	                    family = poisson,
-	                    doFit = FALSE
-	                   )
+	model1.tmb2 = glmmTMB(status ~ dist.dev + forest + 
+	                               shrub + (1| strata), 
+	                      data = indiv.data1,
+	                      family = poisson,
+	                      doFit = FALSE
+	                      )
 
 # Make the intercept large and fixed
   model1.tmb2$parameters$theta[1] = log(1e3)
@@ -391,7 +396,6 @@ We can see the estimated coefficients are all the same.
 
 Lets compare the coefficient estimates from these two model fits with one of the clogit fits from above.
 
-
 **Poisson random intercept (fixed variance)**
 
 ```{r poisson.clogit.comparison1}
@@ -401,7 +405,6 @@ knitr::kable(summary(model1.tmb2)[[6]]$cond[2:4,],digits=3)
 
 ```{r poisson.clogit.comparison2}
 knitr::kable(summary(model1.tmb)[[6]]$cond[2:4,],digits=3)
-
 ```
 
 **clogit model**
@@ -410,13 +413,11 @@ knitr::kable(summary(model1.tmb)[[6]]$cond[2:4,],digits=3)
 knitr::kable(summary(model1)[[7]][,-2],digits=3)
 ```
 
-
-
 We find the same exact estimates. Woohoo!
 
-Note that in the fixed effect implementation (model1.tmb) we are actually estimating a lot of partial intercepts (strata). However, we can ignore them as they are not of interest, just a means to an end. That is way in the above code, we are limiting the estimates from the summary with the part `cond[2:4,]`
+Note that in the fixed effect implementation (model1.tmb) we are actually estimating a lot of partial intercepts (strata). However, we can ignore them as they are not of interest, just a means to an end. That is why in the above code, we are limiting the estimates from the summary with the part `cond[2:4,]`
 
-**Relative Selection**
+##### **Relative Selection**
 
 How do we quantitatively evaluate two locations in terms of habitat selection using our model results? We can do so using Equation 8 of [Fieberg et al. 2021](https://doi.org/10.1111/1365-2656.13441).
 
@@ -450,30 +451,29 @@ Given two locations that differ by 1 standard deviation of percent forest (`fore
 For convenience, we can use the `log_rss` function of the `amt` package to predict the log relative strength when comparing many locations with differing covariates values. To do so, we need create two data frames of the covariate combinations of interest: `s1` and `s2`. 
 
 ```{r preds.amt}
-
 # Make a new data.frame for s1
-s1 = data.frame(
-  dist.dev = seq(from = -2, to = 2, length.out = 100),
-  forest = 0,
-  shrub = 0,
-  strata = 1 # needed, but the number is irrelevant
-)
+  s1 = data.frame(
+          dist.dev = seq(from = -2, to = 2, length.out = 100),
+          forest = 0,
+          shrub = 0,
+          strata = 1 # needed, but the number is irrelevant
+          )
 
 # data.frame for s2
-s2 = data.frame(
-  dist.dev = 0, # mean of dist.dev
-  forest = 0,
-  shrub = 0,
-  strata = 1 # needed, but the number is irrelevant
-  )
+  s2 = data.frame(
+         dist.dev = 0, # mean of dist.dev
+         forest = 0,
+         shrub = 0,
+         strata = 1 # needed, but the number is irrelevant
+    )
 
 # Calculate log-RSS
   lr2 = amt::log_rss(model1.amt1, 
-                      s1, 
-                      s2, 
-                      ci = "se", 
-                      ci_level = 0.95
-                      )
+                     s1, 
+                     s2, 
+                     ci = "se", 
+                     ci_level = 0.95
+                     )
 ```
 
 ```{r plot.rss, class.source = "fold-hide"}
@@ -483,30 +483,29 @@ s2 = data.frame(
   abline(h=0,lwd=2,col=2)
 ```
 
-We have predicted a mean (solid line) and 95% confidence intervals (dotted) of the log-RSS between each value of s1 relative to s2. These locations differ only in their values of `dist.dev`, and the log-RSS is equal to 0 when the two locations are identical (i.e.,  dist.dev = 0). Above the zero line the individiaul is selected more than available and below the zero line they are selecting less than available.
+We have predicted a mean (solid line) and 95% confidence intervals (dotted) of the log-RSS between each value of s1 relative to s2. These locations differ only in their values of `dist.dev`, and the log-RSS is equal to 0 when the two locations are identical (i.e.,  dist.dev = 0). Above the zero line the individual is selected more than available and below the zero line they are selecting less than available.
 
-### 8. Traditional HSF or SSF?
+### Traditional HSF or SSF?
 
 In fitting these data using a movement-based HSF, we are simultaneously trying to account for two important assumptions. First, we are limiting what is available to the animal at each used location by defining the availability as around this area and informed by the movement parameters of step-length (how far is the animal likely to do) and step-length (what direction is the animal likely to go). Second, we are defining our data setup to deal with the fine-scale sequential dependency of consecutive relocations and minimize issues of autocorrelation. If there is interest in using these same data at a lower selection-order, its important to consider the issues of autocorrelation and availability. In the manuscript, we provide two options for doing so. 
 
-### 9. The model being fit
+### The model being fit
 
 Context only.
 
-### 10. The model being approximated
+### The model being approximated
 
 It is the responsibility of the researcher to make sure their modeling process is done such that they are approximating the true underlying model well. To demonstrate this, we will consider how estimated coefficients change with increasing numbers of available samples per each used location. 
 
 ```{r sensitiivity, cache=TRUE,warnings=FALSE}
-
 # Grab individual one's data
-  indiv.dat1 =sims$indiv[[1]]
+  indiv.dat1 = sims$indiv[[1]]
 
 #Size of available samples per used locaiton
-  n.avail2=seq(2,100,by=2)
+  n.avail2 = seq(2,100,by=2)
   
 #Save coefficients
-  coef.save=NULL
+  coef.save = NULL
   
 #Loop across available sample sizes  
   for(i in 1:length(n.avail2)){
@@ -532,8 +531,6 @@ coef.save = data.frame(n.avail2,coef.save)
 colnames(coef.save) = c("N.Avail","beta1","beta2","beta3")
 ```
 
-
-
 ```{r plotting.sensitiivty, class.source = "fold-hide"}
 par(mfrow=c(1,1))
 plot(coef.save$N.Avail, coef.save$beta1,lwd=3,type="l",col=2,ylim=c(-01,1),
@@ -551,18 +548,17 @@ We can see that our estimates of the slope coefficients are sensitive to the num
 Another way to look at this sensitivity is by showing the variability of the coefficients within and across different sizes of available samples.
 
 ```{r sensitiivity2, cache=TRUE,warnings=FALSE}
-
 # Grab individual one's data
-  indiv.dat1 =sims$indiv[[1]]
+  indiv.dat1 = sims$indiv[[1]]
 
 # Size of available samples per used locaiton
-  n.avail2=c(2,10,20,40,60,80,100)
+  n.avail2 = c(2,10,20,40,60,80,100)
   
 # Number of sample replications
  n.sample = 20
   
 # Save coefficients
-  coef.save=NULL
+  coef.save = NULL
   
 #Loop across available sample sizes  
   for(i in 1:length(n.avail2)){
@@ -570,11 +566,11 @@ Another way to look at this sensitivity is by showing the variability of the coe
   #re-sample each available sample size 20 times  
   for (z in 1:n.sample){  
   #Loop through each used location and reduce the number of available samples
-    ind.dat=NULL
+    ind.dat = NULL
   for(j in 1:n.step){
     index = which(indiv.dat1$strata==j)
     #Get the used locaiton and the sub-sampled availables
-    rand.sample= sample(index[-1],n.avail2[i])
+    rand.sample = sample(index[-1],n.avail2[i])
     ind.dat.temp = indiv.dat1[c(index[1],rand.sample),]
     ind.dat = rbind(ind.dat,ind.dat.temp)
   } # end j step loop
@@ -583,12 +579,11 @@ Another way to look at this sensitivity is by showing the variability of the coe
 	model.temp = clogit(status ~ dist.dev + forest + shrub + strata(strata), 
                       data = ind.dat
                       )	
-  coef.save= rbind(coef.save, 
+  coef.save = rbind(coef.save, 
                    coef(model.temp)
                   )
   }#end z sample loop
 }#end i loop
-  
 ```
 
 ```{r plot.sensitive, class.source = "fold-hide"}
@@ -622,17 +617,18 @@ ggplot2::ggplot(plot.data, aes(N.Available.Sample, Coeficient.Estiamte, fill=fac
 
 We see more easily in this plot that there is high variability in the estimated coefficients  when the available sample is small. This variability decreases as the available sample grows, showing how the estimates are stabilizing. 
 
-### 11. Individuals 
+### Individuals 
 
 We should *a priori* assume there is individual variation in habitat selection estimates. This variation is masked when data are pooled. Lets consider the implications of pooling all data vs fitting a model separately to each individual. Note that the object `sims2` has all the individuals combined into a single data frame. We will use the `glmmTMB` function to fit the model using the Poisson model regression approach with strata as a random effect, but that is not really estimated. This is fast and stable implementation. 
 
 ```{r pooling, cache=TRUE, warnings=FALSE, error=FALSE, message=FALSE}
 # Pooled model - no consideration of individual variability
-  model.pool = glmmTMB(status ~ dist.dev + forest + shrub + (1|indiv.id.strata), 
-	                      data=sims2,
-	                      family=poisson,
-	                      doFit = FALSE
-	                      )
+  model.pool = glmmTMB(status ~ dist.dev + forest + shrub +
+                               (1|indiv.id.strata), 
+	                     data=sims2,
+	                     family=poisson,
+	                     doFit = FALSE
+	                     )
   model.pool$parameters$theta[1] = log(1e3)
   model.pool$mapArg = list(theta=factor(c(NA)))
   options(warn=-1)
@@ -680,7 +676,9 @@ Now lets look at all the estimates together.
 
 # Extract separate individual estimates
  indiv.coef = lapply(indiv.fit,FUN=function(x){
-                     temp=broom.mixed::tidy(x, effects = "fixed", conf.int = TRUE)
+                     temp=broom.mixed::tidy(x, effects = "fixed", 
+                                            conf.int = TRUE
+                                            )
                      data.frame(temp[-1,c(4,8,9)])
  })
 
@@ -744,13 +742,13 @@ Since our sample sizes for each individual are equal, we see that the pooled est
 The code for implementing the methods of [Street et al. 2021](https://doi.org/10.1111/2041-210X.13701) can be found at [figshare](https://figshare.com/articles/dataset/Datasets_and_Code_zip/11910831). We are working on a more user friendly implementation.
 
 
-### 12. Population inference
+### Population inference
 
 If we are interested in obtaining inference to the individual- and population-level effects, we can consider bootstrapping the results from individual models or jointly fitting a single model with a random effect across individuals. We will first consider the bootstrapping method. Second, we will demonstrate the use of random intercepts and slopes, as well as how to fix the variance of the random intercept so there is no shrinkage. 
 
-#### Bootrapping
+#### Bootstrapping
 
-The core functions for bootrapping are adopted from Dr. Bastille-Rousseau's github repository for the R package [IndRSA](https://github.com/BastilleRousseau/IndRSA/).
+The core functions for bootstrapping are adopted from Dr. Bastille-Rousseau's github repository for the R package [IndRSA](https://github.com/BastilleRousseau/IndRSA/).
 
 We first need to get all estimated coefficients from each individual. 
 
@@ -798,7 +796,7 @@ We are ready to bootstrap the coefficient estimates.
 We now want to summarize our bootstrapped results. The population mean and 95% lower and upper confidence intervals are outputted.  
 
 ```{r boot.summary}
-#Source summary function
+# Source summary function
   boot.pop.esimates=mean_ci_boot(boot)
   rownames(boot.pop.esimates)=c("dist.dev","forest","shrub")
   knitr::kable(boot.pop.esimates,digits=3)
@@ -832,15 +830,16 @@ The most common use of random effects in habitat selection analysis is the use o
   options(warn=0)
 ```
 
-```{r examine random intercept model}
+The fixed components - these are the mean effects when pooling all individuals. 
 
-# The fixed components - these are the mean effects when pooling all individuals. 
+```{r examine.random.intercept.model}
   fixef(re_int)
-  
-# The random components- these are the effect differences for each variation from the mean estimated (referred to as the fixed effect in the 'conditional model' statement). For this model we will have many many intercepts. Specifically, we will have a unique value for the number of individuals times the number of strata within individual
+```
+
+The random components- these are the effect differences for each variation from the mean estimated (referred to as the fixed effect in the 'conditional model' statement). For this model we will have many many intercepts. Specifically, we will have a unique value for the number of individuals times the number of strata within individual
+
+```{r examine2}
   head(ranef(re_int)[[1]][[1]])
-  
-# Summarize results  
   summary(re_int)
 ```
 
@@ -851,7 +850,6 @@ A random intercepts only model is not recommended.
 This is the recommended model structure using random effects. 
 
 ```{r random.int.slope, cache=TRUE}
-  
 #Fit RSF with intercept and slopes with random effect
   re_int_slopes =  glmmTMB(status ~ -1 + dist.dev + forest + shrub  +
                                     (1|indiv.id.strata) +
@@ -859,7 +857,7 @@ This is the recommended model structure using random effects.
                                     (0+shrub|ID), 
                             family=poisson, 
                             data = sims2, 
-                            doFit=FALSE
+                            doFit = FALSE
                             )
 # make the intercept large and fixed
   re_int_slopes$parameters$theta[1] = log(1e3)
@@ -874,7 +872,7 @@ This is the recommended model structure using random effects.
   options(warn=0)
 ```
 
-Let's look at the results. Here, we have the population-level (across) individual-level means. So, generally, we see that at this level the estimated coefcieents are negative, near zero, and positive for `dist.dev`, `forest`, and `shrub`, respecitively.
+Let's look at the results. Here, we have the population-level (across) individual-level means. So, generally, we see that at this level the estimated coefcieents are negative, near zero, and positive for `dist.dev`, `forest`, and `shrub`, respectively.
 
 ```{r RE.results.fixed1}
   fixef(re_int_slopes)
@@ -891,11 +889,10 @@ We can get estimates with 95% confidence intervals as well. We see that these st
 
 Here are estimated population-level coefficients (across individual-level effects). Compared to the bootstrapped results above, they are generally similar. We should not expect them to be the same, as the random effect model shares information across individuals and the bootstrapped esimates do not. However, the interpretation of the two approaches leads to the same conclusions about the estimated sign and statistical clarity. 
 
-
 We can also extract the estimated difference by individual from the population level coefficients, as well as estimated with confidence intervals. These estimates are an indication of whether an individual has a different estimate than the overall population mean. 
 
 ```{r RE.results.random}
-  ranef.out=ranef(re_int_slopes)
+  ranef.out = ranef(re_int_slopes)
   ranef.out$cond$ID
   ranef.out.ci = broom.mixed::tidy(re_int_slopes, 
                                    effects = "ran_vals", 
@@ -930,11 +927,11 @@ Another thing to notice is that the population level effect for forest is not st
 
 ```{r RE.plot.forest.indiv.pop, class.source = "fold-hide"}
 #Plot
-  plotCI(x=1:20,
-         y=indiv.forest.popModel$estimate,
-         ui=indiv.forest.popModel$conf.high,
-         li=indiv.forest.popModel$conf.low,
-         lwd=3,col=1,
+  plotCI(x = 1:20,
+         y = indiv.forest.popModel$estimate,
+         ui = indiv.forest.popModel$conf.high,
+         li = indiv.forest.popModel$conf.low,
+         lwd = 3,col=1,
          xlab="Individual",ylab="Forest Coeficient")
   abline(h=pop.coef.popModel$estimate[2],lwd=3,col=1,lty=4)
   abline(h=pop.coef.popModel$conf.low[2],lwd=3,col=2,lty=4)
@@ -943,8 +940,6 @@ Another thing to notice is that the population level effect for forest is not st
 
 Our plot shows the individual effects of `forest` (vertical lines) along with the population-level mean and confidence intervals (horizontal lines). What is clear is that the reason there is no statistically clear difference of the population-level effect from zero is because there is a wide range of effects across individuals. Some individuals have slightly positive coefficients and some have slightly negative. Since these are generally equal, they balance out to a population-level effect of zero. The story is more complicated! To decide on statistical clarity between an individual's effect and the population, you can go back to the confidence intervals of the estimated effect differences. 
 
-
-#### Model fitting issues with random effects
 
 ### 13. Considering context in habitat selection analyses
 
@@ -981,7 +976,7 @@ Lets fit a model where we ignore the behavioral differences in selection and fit
 ```{r behav.fit}
   model.ignore.behav =  clogit(status ~ dist.dev + strata(indiv.id.strata), 
                                data = data.ignore
-                    )	
+                               )	
   summary(model.ignore.behav)
 ```
 
