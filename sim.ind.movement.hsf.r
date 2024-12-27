@@ -11,8 +11,8 @@ sim.ind.movement.hsf = function(hsf.true=hsf.true,
   
 #Constrained random starting of each kth simuation (contrained within the sample space)
   set.seed(343554)
-  start.x=runif(n.indiv,400,700)
-  start.y=runif(n.indiv,400,700)
+  start.x=runif(n.indiv,2000,2000)
+  start.y=runif(n.indiv,2000,2000)
   
   # Create empty vectors and the use stratification variable
   avail.x=NULL
@@ -35,6 +35,11 @@ sim.ind.movement.hsf = function(hsf.true=hsf.true,
       
       # Draw n.step turn angles and step lengths
       step=rexp(n.step, rate=step.rate)
+#      quantile(step, probs=0.99)
+#Protect against rare really large steps that put the
+#animal outside of the bounds
+      step[which(step>1/step.rate*6)]=mean(step)
+      
       options(warn=-1)
       turn=rvonmises(n = n.step,
                      m = angle.mean,
@@ -48,6 +53,13 @@ sim.ind.movement.hsf = function(hsf.true=hsf.true,
       # From that calculate new x and y
       new.x=as.numeric(x[j]+delta.x)
       new.y=as.numeric(y[j]+delta.y)
+      
+      #catch boundary movements
+      if(any(new.x>4000)){new.x[which(new.x>4000)]=4000}
+      if(any(new.y>4000)){new.y[which(new.y>4000)]=4000}
+      
+      if(any(new.x<0)){new.x[which(new.x<0)]=0}
+      if(any(new.y<0)){new.y[which(new.y<0)]=0}
       
       # Extract the true underlying hsf and exponentiate
       hsf.ext=exp(extract(hsf.true[[k]],

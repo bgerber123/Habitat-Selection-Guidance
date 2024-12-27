@@ -23,6 +23,9 @@ habitat selection, for example, selection within an individual's home range. The
 focues on addressing the manuscripts points regarding movement-based habitat selection or
 step-selection functions.
 
+[Traditional HSF (Link)](TraditionalHSF.html)
+[Movement-based HSF (Link)](MovementHSF.html)
+
 ### Additional Files
 
 - `sim.ind.movement.hsf.r`: simulation of individual movement based habibtat selection

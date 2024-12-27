@@ -1,5 +1,5 @@
 ---
-title: "Traditional Habitat Selection <br> Guidance (in practice)"
+title: "Traditional Habitat Selection <br> Guidance"
 author: "Brian D. Gerber"
 date: "2024-12-13"
 output: 
@@ -32,7 +32,7 @@ pre {
 
 ## Introduction
 
-This vignette is associated with the manuscript titled, 'A plain language review and guidance for modeling animal habitat-selection'. We will be demonstrating some of the points made in the manuscript on fitting models to estimate traditional habitat selection functions (HSF) at the third-order of selection (e.g. selection within the home range). 
+This vignette is associated with the manuscript titled, 'A plain language review and guidance for modeling animal habitat-selection'. We will be demonstrating some of the points from the manuscript on fitting models to estimate traditional habitat selection functions (HSF) at the third-order of selection (e.g. selection within the home range). 
 
 *Note:* some of the code-chunks are not automatically displayed. To show the code, select 'show'. 
 
@@ -51,13 +51,20 @@ This vignette is associated with the manuscript titled, 'A plain language review
   library(amt)
   library(remotes)
   library(ggplot2)
+  library(raster)
 
 # A github repository to install
 #  remotes::install_github("Pakillo/grateful")
   library(grateful)
 
+# Source power analysis function
+  source("sample.size.used.locs.r")
+
 # Source bootstrapping function
   source("mean_ci_boot.r")
+
+# Load spatial covariate data (used for power analysis)
+  load("Covs")
 ```
 
 ### Simulate data
@@ -440,7 +447,7 @@ amt::fit_rsf
 ##     class(m) <- c("fit_logit", "glm", class(m))
 ##     m
 ## }
-## <bytecode: 0x000002344975b270>
+## <bytecode: 0x000001b4acf5a150>
 ## <environment: namespace:amt>
 ```
 
@@ -749,7 +756,7 @@ plot(coef.save$N.Avail, coef.save$Intercept,lwd=3,type="l",col=1,main="Intercept
      xlab="Number of Available Samples",ylab="Coeficient Estimate")
 ```
 
-![](TraditionalHSF_files/figure-html/plotting.sensitivity, -1.png)<!-- -->
+![](TraditionalHSF_files/figure-html/plotting.sensitivity-1.png)<!-- -->
 
 We can see that our estimates of the slope coefficients are sensitive to the number of available locations when there are less than a few thousand available locations; there is still a bit of jumping around until the available samples are above 4000. In contrast, we can see the intercept just keep getting smaller and smaller because our available sample size is getting larger and larger. The intercept is not biologically meaningful. 
 
@@ -824,9 +831,9 @@ plot.data$Name = c(rep("Intercept",nrow(one)),
 plot.data$N.Avail = as.factor(plot.data$N.Avail)
 
 
-colnames(plot.data) = c("N.Available.Sample","Sample","Coeficient.Estiamte","Name")
+colnames(plot.data) = c("N.Available.Sample","Sample","Coeficient.Estimate","Name")
 
-ggplot2::ggplot(plot.data, aes(N.Available.Sample, Coeficient.Estiamte, fill=factor(Name))) +
+ggplot(plot.data, aes(N.Available.Sample, Coeficient.Estimate, fill=factor(Name))) +
   theme_bw()+
   geom_boxplot()
 ```
@@ -1006,7 +1013,202 @@ Since our sample sizes for each individual are equal, we see that the pooled est
 
 #### Sample size
 
-The code for implementing the methods of [Street et al. 2021](https://doi.org/10.1111/2041-210X.13701) can be found at [figshare](https://figshare.com/articles/dataset/Datasets_and_Code_zip/11910831). We are working on a more user friendly implementation.
+A common question is how many used locations is needed to provide statistical clarity about a a habitat selection variable? We can determine this using the methods of [Street et al. 2021](https://doi.org/10.1111/2041-210X.13701); their data/code can be found at [figshare](https://figshare.com/articles/dataset/Datasets_and_Code_zip/11910831). 
+
+We will explicitly use spatial data in this section. First, lets grab one spatial covariate that was already loaded.
+
+
+``` r
+S = covs[[1]]
+values(S) = scale(values(S))  
+```
+
+Now, we can define our intercept and slope/effect for this spatial covariate in determining the true habitat selection values.
+
+
+``` r
+# Create habitat selection function values
+# We will use a slope of -0.2 for our spatial covariate
+  beta = matrix(c(1,-0.2),
+                 nrow = 2,
+                 ncol = 1
+                ) 
+# Design matrix
+  X = cbind(1,values(S))  
+  
+#Intensity of selection  
+  lambda = exp(X%*%beta) 
+
+# Create spatial layer with HSF values  
+  S.HSF = S
+  values(S.HSF) = lambda
+
+# Plots
+  par(mfrow=c(1,2),mar=c(4,4,4,4))
+  plot(S, main = "Spatial Covariate")
+  plot(S.HSF, main = "Relative Intensity of Selection")
+```
+
+![](TraditionalHSF_files/figure-html/power2-1.png)<!-- -->
+
+To determine the minimum number of used samples for the covariate and habitat selection values (with coefficient of -0.2`), we need to define our criteria for statistical clarity. Specifically, we are interesting in finding 
+
+"Recall that $N_{\alpha, p}(\beta)$ was defined to be the minimum number of samples, N, required so that we expect to reject the null hypothesis of $\beta = 0$ (vs. alternative $\beta \neq 0$), at a significance level of $p$, in $100(1 − \alpha)\%$ of experiments". [Street et al. 2021 (Supplementary Appendix A)](https://doi.org/10.1111/2041-210X.13701)
+
+
+``` r
+# Define Inputs
+  alpha = 0.05
+  p_val = 0.05
+```
+
+We are now ready to determine the number of used locations required to achieve our goal.
+
+
+``` r
+N.used = sample.size.used.locs(alpha = alpha,
+                               p_val = p_val,
+                               HSF.True = S.HSF,
+                               S = S,
+                               beta = beta[2]
+                               )
+N.used$Nalphapbetas
+```
+
+```
+## [1] 353.5197
+```
+Given the spatial heterogeneity in our covariate, a coefficient of -0.2 and the above levels of statistical clarity, we only need 353.5196997 used locations. 
+
+Lets consider varying our Type I error rate ($\alpha$) to see how our sample size changes. We will hold all other variables constant.
+
+
+``` r
+  n.combs =  20
+  alpha = seq(0.0001,0.3,length.out = n.combs)
+  N.used = rep(0,n.combs)
+  
+  #Loop through   
+  for(i in 1:n.combs){
+  temp = sample.size.used.locs(alpha=alpha[i],
+                                    p_val = p_val,
+                                    HSF.True = S.HSF,
+                                    S = S,
+                                    beta = beta[2])
+  N.used[i] = temp$Nalphapbetas
+  }
+```
+
+
+```{.r .fold-hide}
+  plot(alpha,N.used,col=2,type="l",lwd=3,xlab="Type I Error Rate",ylab="Sample Size of Used Locations Needed")
+```
+
+![](TraditionalHSF_files/figure-html/power.plot1-1.png)<!-- -->
+
+We we might expect, as we relax the Type I error rate, it is easier to determine statistical clarity at lower sample sizes of used locations.
+
+Next, lets reset $\alpha = 0.05$ and evaluate our sample size requirements when as we change the effect size (i.e., coefficient) of our spatial variable
+
+
+``` r
+  n.combs =  40
+  N.used = rep(0,n.combs)
+  beta.combs=seq(-2,2,length.out=n.combs)
+  
+  for(i in 1:n.combs){
+  
+    beta = matrix(c(-1,beta.combs[i]),
+                   nrow=,ncol=1)  
+    X = cbind(1,values(S))  
+    lambda = exp(X%*%beta) 
+  
+    HSF.True = S
+    values(HSF.True)= lambda
+    temp = sample.size.used.locs(alpha = 0.05,
+                                      p_val = 0.05,
+                                      HSF.True = HSF.True,
+                                      S = S,
+                                      beta = beta.combs[i]
+                                      )
+    N.used[i] = temp$Nalphapbetas
+  }
+```
+
+
+```{.r .fold-hide}
+  plot(beta.combs,N.used,col=2,type="b",lwd=3,xlab="Coefficient",ylab="Sample Size of Used Locations Needed")
+```
+
+![](TraditionalHSF_files/figure-html/power.plot2-1.png)<!-- -->
+
+We see that as the coefficient gets closer to zero, we require more samples to determine that it is statistically clearly different from zero. This should hopefully make some logical sense.
+
+Last, we will examine how the heterogeneity of the spatial covariate effects our required sample size. We will specifically do this by changing the values of the spatial covariate in terms of the standard deviation but will measure it in terms of 'landscape complexity', as one in [Street et al. 2021 ](https://doi.org/10.1111/2041-210X.13701). Note that we will return to a slope coefficient of ($\beta = -0.2$).
+
+
+``` r
+  n.combs = 20
+  n.reps = 30
+  sd.combs = seq(0.1,0.5,length.out = n.combs)
+  N.used = N.variance = NULL
+  save.hsf = vector("list",20)
+
+# Loop over sd.combs
+  for(i in 1:n.combs){
+  
+    # Replicates
+    for(j in 1:n.reps){  
+      # Simulate Spatial support of point process
+      S = raster(xmn=0,xmx=1.5,ymn=0,ymx=1,res=0.05)
+    
+      # Random spatial covariate
+      phi = 0.7 # spatial decay parameter
+      
+      n = ncell(S)
+      xy = xyFromCell(S, 1:n)
+      d = as.matrix(dist(xy))		
+      Sigma = exp(-d/phi)
+      Sigma = t(chol(Sigma))
+      values(S) = Sigma %*% rnorm(n,0,sd=sd.combs[i])
+  
+      values(S) = scale(values(S))
+      # Smooth resource covariate
+      S = disaggregate(S,fact=2,method="bilinear")
+      
+      beta = matrix(c(-1,-0.2),nrow=2,ncol=1)  #coefs
+      X = cbind(1,values(S))  # design matrix
+      lambda = exp(X%*%beta) #intensity of selection
+  
+      HSF.True=S
+      values(HSF.True)= lambda
+      N.temp = sample.size.used.locs(alpha = 0.05,
+                                     p_val = 0.05,
+                                     HSF.True = HSF.True,
+                                     S = S,
+                                     beta = beta[2]
+                                     )
+      
+      N.used = c(N.used,N.temp$Nalphapbetas)
+      N.variance = c(N.variance, N.temp$variance)
+    }
+  }
+```
+
+
+
+```{.r .fold-hide}
+  N.used.plot = data.frame(N.used = N.used,
+                           N.variance = N.variance,
+                           sd = rep(sd.combs,each=n.reps)
+                          )
+  N.used.plot = N.used.plot[order(N.used.plot$N.variance),]
+plot(N.used.plot$N.variance,N.used.plot$N.used,lwd=3,col=2,type="l",xlab="Landscape Complexity",ylab="Sample Size of Used Locations Needed")
+```
+
+![](TraditionalHSF_files/figure-html/power.plot3-1.png)<!-- -->
+
+We see how the number of used locations declines with increasing landscape complexity. As there is more variation on the landscape, we have more statistical power at lower sample sizes.
 
 
 ### Population inference
@@ -1071,11 +1273,11 @@ We now want to summarize our bootstrapped results. The population mean and 95% l
 
 
 
-|         |       Mean|        LCI|        UCI|
-|:--------|----------:|----------:|----------:|
-|dist.dev | -0.9605227| -1.1001118| -0.8794034|
-|forest   | -0.2426097| -0.6681814|  0.2474493|
-|shrub    |  1.0422650|  0.9049891|  1.2042919|
+|         |      Mean|        LCI|        UCI|
+|:--------|---------:|----------:|----------:|
+|dist.dev | -0.962506| -1.1033896| -0.8794034|
+|forest   | -0.233231| -0.6817081|  0.2474493|
+|shrub    |  1.044056|  0.9049891|  1.2042720|
 
 #### Random effects across individuals
 
@@ -1365,6 +1567,188 @@ Another thing to notice is that the population level effect for forest is not st
 ![](TraditionalHSF_files/figure-html/RE.plot.forest.indiv.pop-1.png)<!-- -->
 
 Our plot shows the individual effects of `forest` along with the population-level. What is clear is that the reason there is no statistically clear difference of the population-level effect from zero is because there is a wide range of effects across individuals. Some individuals have positive coefficients and some have negative. Since these are generally equal, they balance out to a population-level effect of zero. The story is more complicated!
+
+#### Sample size
+
+An important question to ask is how many individuals should be tracked to be able to provide statistical clarity about a population-level coefficient for a habitat variable? We can determine this using the methods of [Street et al. 2021](https://doi.org/10.1111/2041-210X.13701); their data/code can be found at [figshare](https://figshare.com/articles/dataset/Datasets_and_Code_zip/11910831). For details see the equation 8.
+
+To evaluate this question, we need to consider the population level mean of the coefficient, variation across individuals, landscape complexity, and the number of used locations per individual. For simplicity, we will use a single covariate (`covs[[1]]`) for each individual;.
+
+
+``` r
+#Number of individuals
+  M = 30
+  
+# Population-level coefs
+  beta_mu = 0.2
+  beta_s = 0.5 # note the amount of variation
+  beta_s2 = beta_s^2
+  
+# Individual level coefs
+  set.seed(4254)
+  beta.ind <- rnorm(M, beta_mu,beta_s)
+  
+# Need to calculate landscape complexity or Var[R(X_beta)] for each individual, given the covariate and the individual coefficient
+
+N.variance = NULL    
+for(i in 1:M){
+  
+      beta = matrix(c(-1,beta.ind[i]),nrow=2,ncol=1)  #coefs
+      X = cbind(1,values(covs[[1]]))  # design matrix
+      lambda = exp(X%*%beta) #intensity of selection
+  
+      HSF.True=covs[[1]]
+      values(HSF.True)= lambda
+      N.temp = sample.size.used.locs(alpha = 0.05,
+                                     p_val = 0.05,
+                                     HSF.True = HSF.True,
+                                     S = covs[[1]],
+                                     beta = beta[2]
+                                     )
+      
+      N.variance = c(N.variance, N.temp$variance)
+}  
+  
+
+# Assume the same number of locations per individual
+  N = rep(1000,M)
+
+# Equation 5 of Street et al. 2021
+  sigma <- 1/sqrt(N*N.variance)
+
+# Get from function  
+  zalpha = N.temp$zalpha
+  zp = N.temp$zp
+
+# We need M to be greater than or equal to this value; (Equation 8; Street et al. 2021):
+  
+  Eq8 = (beta_s2*(zalpha+zp)^2 + sqrt((beta_s^4)*(zalpha+zp)^4 + 
+              4*(beta_mu^2)*(zalpha+zp)^2*sum(sigma))) / (2*beta_mu^2)
+
+paste("M (tracked individuals) should be greater than or equal to ", round(Eq8,digits=0))
+```
+
+```
+## [1] "M (tracked individuals) should be greater than or equal to  85"
+```
+
+Lets consider how the number of individuals needed changes with different population-mean coefficients.
+
+
+
+```{.r .fold-hide}
+  M = 30
+  
+  beta_mu = seq(0.1,0.75,length.out=10)
+  beta_s = 0.5 
+  beta_s2 = beta_s^2
+
+  min.indiv = rep(NA, length(beta_mu))
+
+for(z in 1:length(beta_mu)){    
+# Individual level coefs
+  set.seed(4254)
+  beta.ind <- rnorm(M, beta_mu[z],beta_s)
+  
+  N.variance = NULL    
+  for(i in 1:M){
+    
+        beta = matrix(c(-1,beta.ind[i]),nrow=2,ncol=1)  
+        X = cbind(1,values(covs[[1]]))  
+        lambda = exp(X%*%beta) 
+    
+        HSF.True=covs[[1]]
+        values(HSF.True)= lambda
+        N.temp = sample.size.used.locs(alpha = 0.05,
+                                       p_val = 0.05,
+                                       HSF.True = HSF.True,
+                                       S = covs[[1]],
+                                       beta = beta[2]
+                                       )
+        
+        N.variance = c(N.variance, N.temp$variance)
+  }  #end i loop
+    
+    N = rep(1000,M)
+    sigma <- 1/sqrt(N*N.variance)
+    zalpha = N.temp$zalpha
+    zp = N.temp$zp
+  
+    
+    Eq8 = (beta_s2*(zalpha+zp)^2 + sqrt((beta_s^4)*(zalpha+zp)^4 + 
+                4*(beta_mu[z]^2)*(zalpha+zp)^2*sum(sigma))) / (2*beta_mu[z]^2)
+    
+    min.indiv[z] = Eq8
+  
+}#end z loop
+```
+
+
+``` r
+plot(beta_mu,min.indiv,ylab="Minimum Number of Individuals Tracked",lwd=3,col=4,type="b")
+```
+
+![](TraditionalHSF_files/figure-html/power.pop.plot-1.png)<!-- -->
+
+We can see that as the population mean gets larger it becomes easier to have statistical clarity with less individuals tracked.
+
+Next, lets consider how the number of individuals needed changes with the changing the variation of the coefficient across indivduals (i.e, `beta_s` (standard deviation) and `beta_s2` (variance). We will reset the population mean back to 0.2.
+
+
+```{.r .fold-hide}
+  M = 30
+  
+  beta_mu = 0.2
+  beta_s = seq(0.01,0.5,length.out=10) 
+  beta_s2 = beta_s^2
+
+  min.indiv = rep(NA, length(beta_mu))
+
+for(z in 1:length(beta_s)){    
+  set.seed(4254)
+  beta.ind <- rnorm(M, beta_mu,beta_s)
+  
+  N.variance = NULL    
+  for(i in 1:M){
+    
+        beta = matrix(c(-1,beta.ind[i]),nrow=2,ncol=1)  
+        X = cbind(1,values(covs[[1]]))  
+        lambda = exp(X%*%beta) 
+    
+        HSF.True=covs[[1]]
+        values(HSF.True)= lambda
+        N.temp = sample.size.used.locs(alpha = 0.05,
+                                       p_val = 0.05,
+                                       HSF.True = HSF.True,
+                                       S = covs[[1]],
+                                       beta = beta[2]
+                                       )
+        
+        N.variance = c(N.variance, N.temp$variance)
+  }  #end i loop
+    
+    N = rep(1000,M)
+    sigma <- 1/sqrt(N*N.variance)
+    zalpha = N.temp$zalpha
+    zp = N.temp$zp
+  
+    
+    Eq8 = (beta_s2[z]*(zalpha+zp)^2 + sqrt((beta_s[z]^4)*(zalpha+zp)^4 + 
+                4*(beta_mu^2)*(zalpha+zp)^2*sum(sigma))) / (2*beta_mu^2)
+    
+    min.indiv[z] = Eq8
+  
+}#end z loop
+```
+
+
+``` r
+plot(beta_s2,min.indiv,ylab="Minimum Number of Individuals Tracked",lwd=3,col=4,type="b")
+```
+
+![](TraditionalHSF_files/figure-html/power.pop.plot2-1.png)<!-- -->
+
+Our results agree with the statement from [Street et al. 2021](https://doi.org/10.1111/2041-210X.13701) that "Note that [Equation 8] is a non-decreasing function of $\sigma^2$, meaning that more variation among individuals is likely to mean one has to sample a higher number of animals.
 
 ### Considering context in habitat selection analyses
 
