@@ -8,7 +8,8 @@ Gerber, BD, Setash, C, Ivan, J and Northrup, J. A plain language review and guid
 
 ## What's in this repository?
 
-This repository comprises two R markdown files and associated files.
+This repository comprises two R markdown files and associated files. You can download all files
+in this [Zip](HSF.Guide.Files.zip)
 
 ---
 
