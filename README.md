@@ -23,10 +23,10 @@ habitat selection, for example, selection within an individual's home range. The
 focues on addressing the manuscripts points regarding movement-based habitat selection or
 step-selection functions.
 
-<a href="https://bgerber123.github.io/Habitat-Selection-Guidance
+<a href="https://htmlpreview.github.io/?https://github.com/bgerber123/Habitat-Selection-Guidance
 /TraditionalHSF.html" title="">Traditional HSF (Link)</a>
 
-<a href="MovementHSF.html" title="">Traditional HSF (Link)</a>
+<a href="MovementHSF.html" title="">Movement-based HSF (Link)</a>
 
 ### Additional Files
 
