@@ -20,17 +20,13 @@ The two fundamental scripts are `TraditionalHSF.Rmd` and `MovementHSF.Rmd`. Both
 similarly, setting up the environment and data, and then follow the subsections of the manuscript. 
 The first file focuses on addressing the manuscripts points regarding traditional broad-scale
 habitat selection, for example, selection within an individual's home range. The second file
-focues on addressing the manuscripts points regarding movement-based habitat selection or
+does most of the same operations but regarding movement-based habitat selection or
 step-selection functions.
-
-<a href="https://htmlpreview.github.io/?https://github.com/bgerber123/Habitat-Selection-Guidance
-/TraditionalHSF.html" title="">Traditional HSF (Link)</a>
-
-<a href="MovementHSF.html" title="">Movement-based HSF (Link)</a>
 
 ### Additional Files
 
 - `sim.ind.movement.hsf.r`: simulation of individual movement based habibtat selection
-- `mean_ci_boot.r`: bootsrapping function to get population (across individual) infernece
+- `mean_ci_boot.r`: bootstrapping function to get population (across individual) inference
 - `Covs`: rasters of spatial covariates
+- `sample.size.used.locs.r`: implements the power analysis methods of [Street et al. 2021](https://doi.org/10.1111/2041-210X.13701)
   
