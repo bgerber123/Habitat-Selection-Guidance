@@ -11,6 +11,22 @@ Gerber, BD, Setash, C, Ivan, JS and Northrup, JM. A plain language review and gu
 This repository comprises two main R markdown files and associated files to compile them into HTML and markdown files. You can download all files
 in this [Zip](HSF.Guide.Files.zip)
 
+## Viewing
+
+This work is best viewed here:
+
+[Traditional HSF](https://bgerber123.github.io/hsfguide/TraditionalHSF.html)
+
+[Movement-based HSF](https://bgerber123.github.io/hsfguide/MovementHSF.html)
+
+
+The compiled markdown files can also be viewed here:
+
+[Traditional HSF](TraditionalHSF.md)
+
+[Movement-based HSF](MovementHSF.md)
+
+
 ---
 
 ## The working directory

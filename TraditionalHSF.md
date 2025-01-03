@@ -3,8 +3,6 @@ title: "Traditional Habitat Selection <br> Guidance"
 author: "Brian D. Gerber, Casey Setash, Jacob S. Ivan. and Joseph M. Northrup"
 date: "2024-1-3"
 output: 
-  github_document:
-    html_preview: FALSE  
   html_document:
     toc: true
     toc_float: true
@@ -468,7 +466,7 @@ amt::fit_rsf
 ##     class(m) <- c("fit_logit", "glm", class(m))
 ##     m
 ## }
-## <bytecode: 0x00000210aff19150>
+## <bytecode: 0x000001fc2a7bcfc8>
 ## <environment: namespace:amt>
 ```
 
