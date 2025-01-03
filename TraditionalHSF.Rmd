@@ -1,7 +1,7 @@
 ---
 title: "Traditional Habitat Selection <br> Guidance"
-author: "Brian D. Gerber"
-date: "2024-12-28"
+author: "Brian D. Gerber, Casey Setash, Jacob S. Ivan. and Joseph M. Northrup"
+date: "2024-1-3"
 output: 
   github_document:
     html_preview: FALSE  
@@ -19,7 +19,7 @@ knit: (function(inputFile, encoding) {
 ```{=html}
 <style type="text/css">
 body, td {
-   font-size: 14px;
+   font-size: 16px;
 }
 code.r{
   font-size: 16px;
@@ -61,13 +61,13 @@ This vignette is associated with the manuscript titled, 'A plain language review
   library(grateful)
 
 # Source power analysis function
-  source("sample.size.used.locs.r")
+  source("./functions/sample.size.used.locs.r")
 
 # Source bootstrapping function
-  source("mean_ci_boot.r")
+  source("./functions/mean_ci_boot.r")
 
 # Load spatial covariate data (used for power analysis)
-  load("Covs")
+  load("./data/Covs")
 ```
 
 ### Simulate data
@@ -743,7 +743,7 @@ Since our sample sizes for each individual are equal, we see that the pooled est
 
 #### Sample size
 
-A common question is how many used locations are needed to provide statistical clarity about a a habitat selection variable? We can determine this using the methods of [Street et al. 2021](https://doi.org/10.1111/2041-210X.13701); their data/code can be found at [figshare](https://figshare.com/articles/dataset/Datasets_and_Code_zip/11910831).
+A common question is how many used locations for a given individual (or pooled across individuals) are needed to provide statistical clarity about a habitat selection variable? We can determine this using the methods of [Street et al. 2021](https://doi.org/10.1111/2041-210X.13701); their data/code can be found at [figshare](https://figshare.com/articles/dataset/Datasets_and_Code_zip/11910831).
 
 We will explicitly use spatial data in this section. First, lets grab one spatial covariates that was already loaded.
 
@@ -778,7 +778,7 @@ Now, we can define our intercept and slope/effect for this spatial covariate in 
   plot(S.HSF, main = "Relative Intensity of Selection")
 ```
 
-You can think of this covariate as the Normalized Difference Vegetation Index (NDVI) if that makes it easier to visualize. To determine the minimum number of used samples for the covariate and habitat selection values (with coefficient of \`r beta[2]\`\`), we need to define our criteria for statistical clarity. Specifically, we are interesting in finding N:
+You can think of this covariate as the Normalized Difference Vegetation Index (NDVI) if that makes it easier to visualize. To determine the minimum number of used samples for the covariate and habitat selection values (with coefficient of $\beta[2]$), we need to define our criteria for statistical clarity. Specifically, we are interesting in finding N:
 
 "Recall that $N_{\alpha, p}(\beta)$ was defined to be the minimum number of samples, N, required so that we expect to reject the null hypothesis of $\beta = 0$ (vs. alternative $\beta \neq 0$), at a significance level of $p$, in $100(1 − \alpha)\%$ of experiments". [Street et al. 2021 (Supplementary Appendix A)](https://doi.org/10.1111/2041-210X.13701)
 
@@ -980,7 +980,7 @@ We now want to summarize our bootstrapped results. The population mean and 95% l
 
 ##### Random intercept only model
 
-The most common use of random effects in habitat selection analysis is the use of a random intercept. As described in the manuscript, this does not account for variation in the slope coefficients, which is problematic.
+The most common use of random effects in habitat selection analysis is the use of a random intercept. As described in the manuscript, this does not account for variation in the slope coefficients, which is problematic. Here, we will allow the intercepts to vary, which accommodates different sample sizes and thus different ratios of used to available samples per each individual (not a major issue in this contrived setting of all individuals having the same sample size). However, if we allowed the random effect variance to be estimated we would get shrinkage towards the mean, which we do not want in this case. Therefore, we will fix the random effect variance to a large value to ensure there is no shrinkage. 
 
 ```{r random.intercept, cache=TRUE}
 # Setup HSF with logistic regression approximation - random intercept model
@@ -1014,12 +1014,59 @@ The most common use of random effects in habitat selection analysis is the use o
 
 A random intercepts only model is not recommended.
 
+##### Alternative to Random intercept only model
+
+The use of random effects is really not particularly useful. We are really looking to estimate slopes across all individuals (pooling) while allowing the intercepts by individual to vary to accomadate different sample sizes. We can accomplish the same thing using a fixed-effect only model and thus not need to fix any random effect variance. Specifically, we can do that by setting up a design matrix using contrast sums, also know as effecting coding.
+
+```{r alt.RE.intercept}
+
+#Make ID a factor
+  sims2$ID=as.factor(sims2$ID)
+
+#Setup a design matrix with individual ID's
+  X = model.matrix(~ID,
+                   data = sims2,
+                   contrasts.arg =list(ID="contr.sum")
+                   )
+
+# fixed effect intercepts that vary by individual
+  fix_int = glmmTMB(status ~ 0 + X + dist.dev + forest + shrub, 
+                   family = binomial(), 
+                   data = sims2
+  )
+
+```
+
+Now lets compare the estimated effects from `fix_int` and `re_int`. First lets look at the slopes for `re_int`... 
+
+```{r fix.re.compare1}
+kable(summary(re_int)[[6]][[1]][2:4,])
+```
+
+And here we have the same estimates for `fix_int`, 
+
+```{r fix.re.compare2}
+kable(summary(fix_int)[[6]][[1]][(n.indiv+1):(n.indiv+1+2),])
+```
+
+Notice that they are practically the same. The intercepts are the same as well, but we need to reorganize the results a tad to make our comparison...
+
+```{r fix.re.compare3}
+int.re = ranef(re_int)[[1]][[1]]
+
+int.fe = c(summary(fix_int)[[6]][[1]][1,1]+
+           summary(fix_int)[[6]][[1]][2:20],
+           summary(fix_int)[[6]][[1]][1,1]
+           )
+kable(round(data.frame(individual = 1:20,int.fe=int.fe,int.re=int.re),digits=2))
+```
+We get the same estimates, again. The point is that the random effect is not being used in the manner we usually might use it. Choosing to using a random effect with a large fixed variance of fixed effects can be chosen based on convenience. There may be some convenience to the random effect process when there are many individuals. 
+
 #### Random intercept and slopes model
 
 This is the recommended model structure using random effects.
 
 ```{r model2, cache=TRUE}
-  
 #Fit RSF with intercept and slopes with random effect
   re_int_slopes =  glmmTMB(status ~ dist.dev + forest + shrub  + 
                                      (1|ID) + (0+dist.dev|ID) +
@@ -1063,12 +1110,11 @@ Lastly, we can see a full summary of the model.
 summary(re_int_slopes)
 ```
 
-Note the variance and standard deviation estimates, indicating how variable coefficients are across individuals. We see that `forest` is estimated as the most variable. This corresponds well to how the data were generated with forest coefficients having the highest standard deviation of \`r beta2.sd\`\`.
+Note the variance and standard deviation estimates, indicating how variable coefficients are across individuals. We see that `forest` is estimated as the most variable. This corresponds well to how the data were generated with forest coefficients having the highest standard deviation of `beta.sd` which was set as `r beta2.sd`.
 
 Another thing to notice is that the population level effect for forest is not statistically clearly different than zero. Thus, at the population level, percent forest is being selected in proportion to what is available to each individual. Let's dive into this a bit more. Let's plot the individual estimates along with the population-level estimate.
 
 ```{r RE.est.forest.indiv.pop}
-
   indiv.coef.popModel = broom.mixed::tidy(re_int_slopes, 
                                           effects = "ran_vals", 
                                           conf.int = TRUE)
@@ -1100,6 +1146,8 @@ Another thing to notice is that the population level effect for forest is not st
 ```
 
 Our plot shows the individual effects of `forest` along with the population-level. What is clear is that the reason there is no statistically clear difference of the population-level effect from zero is because there is a wide range of effects across individuals. Some individuals have positive coefficients and some have negative. Since these are generally equal, they balance out to a population-level effect of zero. The story is more complicated!
+
+The point of this model is that we have effects per each individual and at the population-level for each estimated effect/slope. We also are accommodating different sample sizes with the random intercepts. However, one could use the trick from above to allow intercepts to vary by individual using fixed effects and then only use random effects for the spatial variables. 
 
 #### Sample size
 
@@ -1328,7 +1376,7 @@ We see that the estimated forest coefficient is not near the true values of -2 o
 
 ### Interpreting coefficients and predicting
 
-Interpreting coefficients and predicting is outlined above in subsection `7. What are habitat-selection functions used for?`.
+Interpreting coefficients and predicting is outlined above in subsection `3.7. What are habitat-selection functions used for?`.
 
 ### Model selection
 

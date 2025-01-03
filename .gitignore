@@ -1,0 +1,54 @@
+# History files
+.Rhistory
+.Rapp.history
+
+# Session Data files
+.RData
+
+# User-specific files
+.Ruserdata
+
+# Example code in package build process
+*-Ex.R
+
+# Output files from R CMD build
+/*.tar.gz
+
+# Output files from R CMD check
+/*.Rcheck/
+
+# RStudio files
+.Rproj.user/
+
+# produced vignettes
+vignettes/*.html
+vignettes/*.pdf
+
+# knitr and R markdown default cache directories
+*_cache/
+/cache/
+
+*/MovementHSF_cache/
+*/TraditionalHSF_cache/
+
+# Temporary files created by R markdown
+*.utf8.md
+*.knit.md
+
+# R Environment Variables
+.Renviron
+
+Formatted Input Data/
+Formatted Data/
+Formatted Data_8_25_22/
+Formatted Data_9_13_22/
+Formatted Data_9_29_22/
+Formatted Data_9_25_23/
+process_round2/
+process_round3/
+maps/
+nimble/unconstrained_results_20plus_new.RDS
+nimble/unconstrained_results_20plus.RDS
+nimble/unconstrained_results_20plus_drop_intercept.RDS
+Output/
+nimble/unconstrained_results_20plus_suncalc_fix.RDS
