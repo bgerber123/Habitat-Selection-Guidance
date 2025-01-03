@@ -13,19 +13,11 @@ in this [Zip](HSF.Guide.Files.zip)
 
 ## Viewing
 
-This work is best viewed here:
+The compiled HTMLs can be viewed here:
 
 [Traditional HSF](https://bgerber123.github.io/hsfguide/TraditionalHSF.html)
 
 [Movement-based HSF](https://bgerber123.github.io/hsfguide/MovementHSF.html)
-
-
-The compiled markdown files can also be viewed here:
-
-[Traditional HSF](TraditionalHSF.md)
-
-[Movement-based HSF](MovementHSF.md)
-
 
 ---
 
