@@ -5,15 +5,7 @@ broom.mixed
 knitr
 amt
 remotes
-grateful
 ggplot2
-geoR
-circular
 sp
 raster
-survival
-Rcpp
-RcppZiggurat
-RcppParallel
-Rfast
-rmarkdown
+grateful
