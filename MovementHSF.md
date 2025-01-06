@@ -120,7 +120,7 @@ We will consider a habitat selection analysis of individuals along a movement tr
 
 ```{.r .fold-hide}
   par(mfrow=c(3,1))
-  hist(betas[,1],xlab=bquote(beta[1]),xlim=c(-3,3),main="True Individual Coeficient Values",breaks=10,freq=FALSE)
+  hist(betas[,1],xlab=bquote(beta[1]),xlim=c(-3,3),main="True Individual Coefficient Values",breaks=10,freq=FALSE)
   abline(v=beta1.mu,lwd=2,col=2)
   curve(dnorm(x,beta1.mu,beta1.sd),lwd=3,col=3,add=TRUE)
   legend("topright",lwd=3,col=c("gray","red","green"),legend=c("Indiv. Coefs", "Pop. Mean","True Distribution"))
@@ -136,7 +136,7 @@ We will consider a habitat selection analysis of individuals along a movement tr
   legend("topright",lwd=3,col=c("gray","red","green"),legend=c("Indiv. Coefs", "Pop. Mean","True Distribution"))
 ```
 
-![](MovementHSF_files/figure-html/visualize true coeficients-1.png)<!-- -->
+![](MovementHSF_files/figure-html/visualize.true.coefficients-1.png)<!-- -->
 
 We have loaded spatial covariate data that can be found in the object `covs`. Lets look at the three covariates we will consider. The covariates included are the Euclidean distance to nearest development (`dist.dev`), the percent forest cover (`forest`), and the percent shrub cover (`shrub`). Each has been standardized to a mean of 0 and standard deviation of 1; this is a common procedure in linear modeling to help optimization algorithms converge to maximum likelihood estimates and to put each covaraite on the same scale (1 standard deviation of the covariate) so that coefficient magnitudes can be compared.
 
@@ -503,7 +503,7 @@ amt::fit_ssf
 ##     }
 ##     m
 ## }
-## <bytecode: 0x0000016eab540cf0>
+## <bytecode: 0x00000216305a0cf0>
 ## <environment: namespace:amt>
 ```
 
@@ -776,8 +776,8 @@ colnames(coef.save) = c("N.Avail","beta1","beta2","beta3")
 ```{.r .fold-hide}
 par(mfrow=c(1,1))
 plot(coef.save$N.Avail, coef.save$beta1,lwd=3,type="l",col=2,ylim=c(-01,1),
-     main="Slope Coeficients",
-     xlab="Number of Available Samples",ylab="Coeficient Estimate")
+     main="Slope Coefficients",
+     xlab="Number of Available Samples",ylab="Coefficient Estimate")
 lines(coef.save$N.Avail, coef.save$beta2,lwd=3,col=2)
 lines(coef.save$N.Avail, coef.save$beta3,lwd=3,col=2)
 ```
@@ -856,9 +856,9 @@ plot.data$Name = c(rep("dist.dev",nrow(one)),
 plot.data$N.Avail = as.factor(plot.data$N.Avail)
 
 
-colnames(plot.data) = c("N.Available.Sample","Sample","Coeficient.Estimate","Name")
+colnames(plot.data) = c("N.Available.Sample","Sample","Coefficient.Estimate","Name")
 
-ggplot2::ggplot(plot.data, aes(N.Available.Sample, Coeficient.Estimate, fill=factor(Name))) +
+ggplot2::ggplot(plot.data, aes(N.Available.Sample, Coefficient.Estimate, fill=factor(Name))) +
   theme_bw()+
   geom_boxplot()
 ```
@@ -1112,7 +1112,7 @@ We are ready to bootstrap the coefficient estimates.
 #How many bootstraps to do? More will lead to results with less error
   nboot = 1000
 
-#Which columns have coeficients in coef.df
+#Which columns have coefficients in coef.df
   col.locs=1:3
 
   boot=list()

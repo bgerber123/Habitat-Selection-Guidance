@@ -9,9 +9,6 @@ output:
     number_sections: true
     code_folding: show
     keep_md: true
-knit: (function(inputFile, encoding) {
-  rmarkdown::render(inputFile, encoding = encoding,
-  output_format = "all") })
 ---
 
 ```{=html}
@@ -126,7 +123,7 @@ We will consider a habitat selection analysis of individuals within a broad geog
 
 ```{.r .fold-hide}
   par(mfrow=c(3,1))
-  hist(betas[,2],xlab=bquote(beta[1]),xlim=c(-3,3),main="True Individual Coeficient Values",breaks=10,freq=FALSE)
+  hist(betas[,2],xlab=bquote(beta[1]),xlim=c(-3,3),main="True Individual Coefficient Values",breaks=10,freq=FALSE)
   abline(v=beta1.mu,lwd=2,col=2)
   curve(dnorm(x,beta1.mu,beta1.sd),lwd=3,col=3,add=TRUE)
   legend("topright",lwd=3,col=c("gray","red","green"),legend=c("Indiv. Coefs", "Pop. Mean","True Distribution"))
@@ -142,7 +139,7 @@ We will consider a habitat selection analysis of individuals within a broad geog
   legend("topright",lwd=3,col=c("gray","red","green"),legend=c("Indiv. Coefs", "Pop. Mean","True Distribution"))
 ```
 
-![](TraditionalHSF_files/figure-html/visualize true coeficients-1.png)<!-- -->
+![](TraditionalHSF_files/figure-html/visualize.true.coefficients-1.png)<!-- -->
 
 We are now ready to simulate individual-level data. We will do this with the `simulateUsedAvail` function from the R package `ResourceSelection`. Because of this, we are not simulating spatial (x-y) data from explicit spatial layers, but we will connect how these data represent typical GPS data and setup when working with spatial variables.
 
@@ -184,8 +181,8 @@ We are now ready to simulate individual-level data. We will do this with the `si
 
 For more information on why a log link indicates relative selection, see Fieberg et al. (2021):
 
-"Instead of focusing on $\p_i$, as is typical in applications to presence–absence data, logistic regression applied to use-availability data should simply be viewed as a
-convenient tool for estimating coefficients in a habitat-selection function, $w(X(s); \beta) = exp(X_{1}(s)\beta_1 + ... X_{k}(s)\beta_k)  (Boyce & McDonald, 1999; Boyce et al., 2002), where we have X(s) to highlight that the predictors correspond to measurements at specific point locations in geographical space, s. As we will see in the next section, this expression is equivalent to the intensity function of an IPP model but with the intercept (the log of the baseline intensity) removed; the baseline intensity gives the expected density of points when all covariates are 0. Because habitat-selection functions do not include this baseline intensity, they are said to measure ‘relative probabilities of use’, or alternatively, said to be ‘proportional to the probability of use’ (Manly et al., 2002). "
+"Instead of focusing on $p_i$, as is typical in applications to presence–absence data, logistic regression applied to use-availability data should simply be viewed as a
+convenient tool for estimating coefficients in a habitat-selection function, $w(X(s); \beta) = \text{exp}(X_{1}(s)\beta_1 + ... X_{k}(s)\beta_k)$  (Boyce & McDonald, 1999; Boyce et al., 2002), where we have X(s) to highlight that the predictors correspond to measurements at specific point locations in geographical space, s. As we will see in the next section, this expression is equivalent to the intensity function of an IPP model but with the intercept (the log of the baseline intensity) removed; the baseline intensity gives the expected density of points when all covariates are 0. Because habitat-selection functions do not include this baseline intensity, they are said to measure ‘relative probabilities of use’, or alternatively, said to be ‘proportional to the probability of use’ (Manly et al., 2002). "
 
 
 Before moving forward lets understand the data for one individual.
@@ -321,7 +318,7 @@ Definitions only.
 
 Definitions only.
 
-We want to remind the reader of the nuance between a habitat selection function and the statistical model we will be fitting. The model we are fitting (as coded) and the true underlying model (Inhomogeneous Poisson Point process; IPP) is not the habitat selection function. The habitat selection function is a component of the IPP model. We will be using a logistic regression modeling (or Generalized Binomial Regression Model) to approximate the IPP model, in which our estimated parameters will be the parameters within the habitat selection function. To understand the model, see equation 1 of [Gerber and Northrup, 2020](https://doi.org/10.1002/ecy.2953)
+We want to remind the reader of the nuance between a habitat selection function and the statistical model we will be fitting. The model we are fitting (as coded) and the true underlying model (Inhomogeneous Poisson Point process; IPP) is not the habitat selection function. The habitat selection function is a component of the IPP model. We will be using a logistic regression modeling (or Generalized Binomial Regression Model) to approximate the IPP model, in which our estimated parameters will be the parameters within the habitat selection function. To understand the model, see equation 1 of [Gerber and Northrup, 2020](https://doi.org/10.1002/ecy.2953).
 
 ### What about scale?
 
@@ -466,7 +463,7 @@ amt::fit_rsf
 ##     class(m) <- c("fit_logit", "glm", class(m))
 ##     m
 ## }
-## <bytecode: 0x000001fc2a7bcfc8>
+## <bytecode: 0x0000028d2b7805e8>
 ## <environment: namespace:amt>
 ```
 
@@ -772,12 +769,12 @@ colnames(coef.save) = c("N.Avail","Intercept","beta1","beta2","beta3")
 ```{.r .fold-hide}
 par(mfrow=c(2,1))
 plot(coef.save$N.Avail, coef.save$beta1,lwd=3,type="l",col=2,ylim=c(-1.5,1.5),
-     main="Slope Coeficients",
-     xlab="Number of Available Samples",ylab="Coeficient Estimate")
+     main="Slope Coefficients",
+     xlab="Number of Available Samples",ylab="Coefficient Estimate")
 lines(coef.save$N.Avail, coef.save$beta2,lwd=3,col=2)
 lines(coef.save$N.Avail, coef.save$beta3,lwd=3,col=2)
 plot(coef.save$N.Avail, coef.save$Intercept,lwd=3,type="l",col=1,main="Intercept",
-     xlab="Number of Available Samples",ylab="Coeficient Estimate")
+     xlab="Number of Available Samples",ylab="Coefficient Estimate")
 ```
 
 ![](TraditionalHSF_files/figure-html/plotting.sensitivity-1.png)<!-- -->
@@ -855,9 +852,9 @@ plot.data$Name = c(rep("Intercept",nrow(one)),
 plot.data$N.Avail = as.factor(plot.data$N.Avail)
 
 
-colnames(plot.data) = c("N.Available.Sample","Sample","Coeficient.Estimate","Name")
+colnames(plot.data) = c("N.Available.Sample","Sample","Coefficient.Estimate","Name")
 
-ggplot(plot.data, aes(N.Available.Sample, Coeficient.Estimate, fill=factor(Name))) +
+ggplot(plot.data, aes(N.Available.Sample, Coefficient.Estimate, fill=factor(Name))) +
   theme_bw()+
   geom_boxplot()
 ```
@@ -1269,7 +1266,7 @@ We are ready to bootstrap the coefficient estimates.
 #How many bootstraps to do? More will lead to results with less error
   nboot = 1000
 
-#Which columns have coeficients in coef.df
+#Which columns have coefficients in coef.df
   col.locs=1:3
 
   boot=list()
@@ -1550,7 +1547,7 @@ Let's look at the results
 
 Here are estimated population-level coefficients (across individual-level effects). Compared to the bootstrapped results above, they are generally similar. We should not expect them to be the same, as the random effect model shares information across individuals and the bootstrapped estimates do not.
 
-We can also extract the estimated difference by individual from the population level coeficients.
+We can also extract the estimated difference by individual from the population level coefficients.
 
 
 ``` r
@@ -1672,7 +1669,7 @@ Another thing to notice is that the population level effect for forest is not st
          ui = indiv.forest.popModel$conf.high,
          li = indiv.forest.popModel$conf.low,
          lwd = 3,col=1,
-         xlab="Individual",ylab="Forest Coeficient")
+         xlab="Individual",ylab="Forest Coefficient")
   abline(h=pop.coef.popModel$estimate,lwd=3,col=1,lty=4)
   abline(h=pop.coef.popModel$conf.low,lwd=3,col=2,lty=4)
   abline(h=pop.coef.popModel$conf.high,lwd=3,col=2,lty=4)
