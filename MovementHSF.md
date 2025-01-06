@@ -23,6 +23,19 @@ pre {
 }
 </style>
 
+<style type="text/css">
+  #TOC {
+    max-width: fit-content;
+    white-space: nowrap;
+  }
+  
+  div:has(> #TOC) {
+    display: flex;
+    flex-direction: row-reverse;
+}
+</style>
+
+
 
 
 ## Introduction
@@ -503,7 +516,7 @@ amt::fit_ssf
 ##     }
 ##     m
 ## }
-## <bytecode: 0x00000216305a0cf0>
+## <bytecode: 0x000001cd3642a8c8>
 ## <environment: namespace:amt>
 ```
 

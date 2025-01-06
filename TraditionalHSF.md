@@ -26,6 +26,19 @@ pre {
 ```
 
 
+<style type="text/css">
+  #TOC {
+    max-width: fit-content;
+    white-space: nowrap;
+  }
+  
+  div:has(> #TOC) {
+    display: flex;
+    flex-direction: row-reverse;
+}
+</style>
+
+
 
 ## Introduction
 
@@ -463,7 +476,7 @@ amt::fit_rsf
 ##     class(m) <- c("fit_logit", "glm", class(m))
 ##     m
 ## }
-## <bytecode: 0x0000028d2b7805e8>
+## <bytecode: 0x0000018baa68ad28>
 ## <environment: namespace:amt>
 ```
 

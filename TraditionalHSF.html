@@ -1586,6 +1586,16 @@ pre {
 font-size: 16px
 }
 </style>
+<style type="text/css">
+#TOC {
+max-width: fit-content;
+white-space: nowrap;
+}
+div:has(> #TOC) {
+display: flex;
+flex-direction: row-reverse;
+}
+</style>
 <div id="introduction" class="section level2" number="1">
 <h2><span class="header-section-number">1</span> Introduction</h2>
 <p>This vignette is associated with the manuscript titled, ‘A plain
@@ -2053,7 +2063,7 @@ function in the <code>stats</code> package as:</p>
 ##     class(m) &lt;- c(&quot;fit_logit&quot;, &quot;glm&quot;, class(m))
 ##     m
 ## }
-## &lt;bytecode: 0x0000028d2b7805e8&gt;
+## &lt;bytecode: 0x0000018baa68ad28&gt;
 ## &lt;environment: namespace:amt&gt;</code></pre>
 </div>
 <div id="relative-selection" class="section level5" number="3.7.1.2">
