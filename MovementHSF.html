@@ -11,6 +11,7 @@
 
 <meta name="author" content="Brian D. Gerber, Casey Setash, Jacob S. Ivan. and Joseph M. Northrup" />
 
+<meta name="date" content="2024-01-06" />
 
 <title>Movement-based Habitat Selection   Guidance</title>
 
@@ -1570,7 +1571,7 @@ border-radius: 0px;
 Guidance</h1>
 <h4 class="author">Brian D. Gerber, Casey Setash, Jacob S. Ivan. and
 Joseph M. Northrup</h4>
-<h4 class="date">2024-1-3</h4>
+<h4 class="date">2024-01-06</h4>
 
 </div>
 
@@ -1607,6 +1608,7 @@ is the fourth-order of selection (e.g. selection along a track within a
 home range).</p>
 <p><em>Note:</em> some of the code-chunks are not automatically
 displayed. To show the code, select ‘show’.</p>
+<p><br></p>
 </div>
 <div id="setup" class="section level2" number="2">
 <h2><span class="header-section-number">2</span> Setup</h2>
@@ -1640,6 +1642,7 @@ an object containing spatial covariates.</p>
 
 # Load spatial covariates stored in a save R object
   load(&quot;./data/Covs&quot;)</code></pre>
+<p><br></p>
 </div>
 <div id="simulate-data" class="section level3" number="2.2">
 <h3><span class="header-section-number">2.2</span> Simulate data</h3>
@@ -1880,6 +1883,7 @@ LETTERS702 &lt;- c(LETTERS, sapply(LETTERS, function(x) paste0(x, LETTERS)))
 ## 403              A1
 ## 404              A1
 ## 405              A1</code></pre>
+<p><br></p>
 </div>
 </div>
 <div id="manuscript-sections" class="section level2" number="3">
@@ -1888,15 +1892,17 @@ sections</h2>
 <p>We are now ready to fit models to estimate our movement-based habitat
 selection parameters and demonstrate points made in the manuscript. We
 have organized the sections below to match with the sections of the
-manuscript.</p>
+manuscript. <br></p>
 <div id="what-is-habitat" class="section level3" number="3.1">
 <h3><span class="header-section-number">3.1</span> What is habitat?</h3>
 <p>Definitions only.</p>
+<p><br></p>
 </div>
 <div id="what-is-habitat-selection" class="section level3" number="3.2">
 <h3><span class="header-section-number">3.2</span> What is habitat
 selection?</h3>
 <p>Definitions only.</p>
+<p><br></p>
 </div>
 <div id="what-is-a-habitat-selection-function" class="section level3" number="3.3">
 <h3><span class="header-section-number">3.3</span> What is a
@@ -1913,6 +1919,7 @@ model with stratum-specific fixed intercepts (<a href="https://doi.org/10.1111/1
 Each approach is used to estimate parameters within the movement-based
 habitat selection function. We will use the same data set to show the
 equivalence of the estimated parameters.</p>
+<p><br></p>
 </div>
 <div id="what-about-scale" class="section level3" number="3.4">
 <h3><span class="header-section-number">3.4</span> What about
@@ -1921,11 +1928,13 @@ scale?</h3>
 <p>In our data setup and analysis we will be estimating habitat
 selection at the fourth-order of the scales defined in Johnson
 (1980).</p>
+<p><br></p>
 </div>
 <div id="why-habitat-selection-function-and-not-resource-selection-function" class="section level3" number="3.5">
 <h3><span class="header-section-number">3.5</span> Why ‘habitat
 selection function’ and not ‘resource selection function’?</h3>
 <p>Definitions only.</p>
+<p><br></p>
 </div>
 <div id="considering-objectives-and-data-collection" class="section level3" number="3.6">
 <h3><span class="header-section-number">3.6</span> Considering
@@ -1971,6 +1980,7 @@ locations (e.g., done in the R package amt; <a href="https://doi.org/10.1002/ece
 other words, resampling the GPS locations at regular intervals. Another
 way is to fit a continuous time movement model to then predict locations
 at a standarized interval (e.g., <a href="https://doi.org/10.1111/gcb.13037">Northrup et al. 2018</a> and <a href="https://doi.org/10.1890/07-1032.1">Johnson et al. 2008</a>)</p>
+<p><br></p>
 </div>
 <div id="what-are-habitat-selection-functions-used-for" class="section level3" number="3.7">
 <h3><span class="header-section-number">3.7</span> What are
@@ -1985,6 +1995,7 @@ abundance. Demonstrating this is beyond our work. We suggest starting
 with the reading of section 1.6, “When is species density a reliable
 reflection of habitat suitability?” of <a href="http://hdl.handle.net/11299/217469">Matthiopoulos, Fieberg, and
 Aarts, 2023</a>.</p>
+<p><br></p>
 <div id="inference" class="section level4" number="3.7.1">
 <h4><span class="header-section-number">3.7.1</span> Inference</h4>
 <p>Let’s fit a model to one individual’s matched used and available data
@@ -2087,6 +2098,7 @@ by 1 standard deviation unit of [the variable] but are otherwise
 equivalent (i.e. they are equally available and have the same values of
 all other habitat covariates)” (<a href="https://doi.org/10.1111/1365-2656.13441">Fieberg et
 al. 2021</a>).</p>
+<p><br></p>
 <div id="other-functions" class="section level5" number="3.7.1.1">
 <h5><span class="header-section-number">3.7.1.1</span> <strong>Other
 Functions</strong></h5>
@@ -2117,7 +2129,7 @@ We can see what the function is doing:</p>
 ##     }
 ##     m
 ## }
-## &lt;bytecode: 0x000001cd3642a8c8&gt;
+## &lt;bytecode: 0x000001cfbac5e7e0&gt;
 ## &lt;environment: namespace:amt&gt;</code></pre>
 <p>Now lets use these functions to estimate the same coefficients as we
 did with <code>clogit</code>:</p>
@@ -2143,6 +2155,7 @@ did with <code>clogit</code>:</p>
 <pre><code>##   dist.dev     forest      shrub 
 ## -0.7831639 -0.4274160  0.8417028</code></pre>
 <p>We can see the estimated coefficients are all the same.</p>
+<p><br></p>
 </div>
 <div id="poisson-model-equivalence-to-the-conditional-logistic-model" class="section level5" number="3.7.1.2">
 <h5><span class="header-section-number">3.7.1.2</span> <strong>Poisson
@@ -2297,6 +2310,7 @@ actually estimating a lot of partial intercepts (strata). However, we
 can ignore them as they are not of interest, just a means to an end.
 That is why in the above code, we are limiting the estimates from the
 summary with the part <code>cond[2:4,]</code></p>
+<p><br></p>
 </div>
 <div id="relative-selection" class="section level5" number="3.7.1.3">
 <h5><span class="header-section-number">3.7.1.3</span> <strong>Relative
@@ -2318,7 +2332,11 @@ high forest but low shrub cover (forest =2, shrub = -2).</p>
 ##  664.787</code></pre>
 <p>If given equal availability, this individual would relatively select
 the first location by a factor of 664.79.</p>
-<p><strong>Relative Selection Strength</strong></p>
+<p><br></p>
+</div>
+<div id="relative-selection-strength" class="section level5" number="3.7.1.4">
+<h5><span class="header-section-number">3.7.1.4</span> <strong>Relative
+Selection Strength</strong></h5>
 <p><a href="https://doi.org/10.1002/ece3.3122">Avgar et al. 2017</a>
 refers to the relative selection strength (RSS) as the exponentiation of
 each coefficient.</p>
@@ -2332,6 +2350,7 @@ forest (<code>forest</code>), but are otherwise equal, this individual
 would be 0.65 as likely to choose the location with higher
 <code>forest</code>, or equivalently, 1.53 times more likely to choose
 the location with the lower <code>forest.</code></p>
+<p><br></p>
 </div>
 </div>
 <div id="prediction" class="section level4" number="3.7.2">
@@ -2379,6 +2398,7 @@ log-RSS is equal to 0 when the two locations are identical (i.e.,
 dist.dev = 0). Above the zero line the individual is selected more than
 available and below the zero line they are selecting less than
 available.</p>
+<p><br></p>
 </div>
 </div>
 <div id="traditional-hsf-or-ssf" class="section level3" number="3.8">
@@ -2396,11 +2416,13 @@ autocorrelation. If there is interest in using these same data at a
 lower selection-order, its important to consider the issues of
 autocorrelation and availability. In the manuscript, we provide two
 options for doing so.</p>
+<p><br></p>
 </div>
 <div id="the-model-being-fit" class="section level3" number="3.9">
 <h3><span class="header-section-number">3.9</span> The model being
 fit</h3>
 <p>Context only.</p>
+<p><br></p>
 </div>
 <div id="the-model-being-approximated" class="section level3" number="3.10">
 <h3><span class="header-section-number">3.10</span> The model being
@@ -2522,6 +2544,7 @@ ggplot2::ggplot(plot.data, aes(N.Available.Sample, Coefficient.Estimate, fill=fa
 estimated coefficients when the available sample is small. This
 variability decreases as the available sample grows, showing how the
 estimates are stabilizing.</p>
+<p><br></p>
 </div>
 <div id="individuals" class="section level3" number="3.11">
 <h3><span class="header-section-number">3.11</span> Individuals</h3>
@@ -2712,6 +2735,7 @@ pooled estimates generally relate to the average of each estimate across
 all individuals. When the number of used locations varies by individual
 this won’t be the case. The individuals with more used locations will
 disproportionately influence the pooled estimates.</p>
+<p><br></p>
 <div id="sample-size" class="section level4" number="3.11.1">
 <h4><span class="header-section-number">3.11.1</span> Sample size</h4>
 <p>The code for implementing the methods of <a href="https://doi.org/10.1111/2041-210X.13701">Street et al. 2021</a>
@@ -2719,6 +2743,7 @@ can be found at <a href="https://figshare.com/articles/dataset/Datasets_and_Code
 <p>You can also find an implementation of these methods to calculate the
 number of used locations to determine statistical clarity of a
 hypothesized spatial effect in the [Traditional HSF example] (<a href="https://bgerber123.github.io/hsfguide/TraditionalHSF.html#311_Individuals" class="uri">https://bgerber123.github.io/hsfguide/TraditionalHSF.html#311_Individuals</a>)</p>
+<p><br></p>
 </div>
 </div>
 <div id="population-inference" class="section level3" number="3.12">
@@ -2731,6 +2756,7 @@ across individuals. We will first consider the bootstrapping method.
 Second, we will demonstrate the use of random intercepts and slopes, as
 well as how to fix the variance of the random intercept so there is no
 shrinkage.</p>
+<p><br></p>
 <div id="bootstrapping" class="section level4" number="3.12.1">
 <h4><span class="header-section-number">3.12.1</span> Bootstrapping</h4>
 <p>The core functions for bootstrapping are adopted from
@@ -2880,6 +2906,7 @@ number of individuals times the number of strata within individual</p>
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>A random intercepts only model is not recommended.</p>
+<p><br></p>
 </div>
 </div>
 <div id="random-intercept-and-slopes-model" class="section level4" number="3.12.3">
@@ -3063,6 +3090,7 @@ a population-level effect of zero. The story is more complicated! To
 decide on statistical clarity between an individual’s effect and the
 population, you can go back to the confidence intervals of the estimated
 effect differences.</p>
+<p><br></p>
 </div>
 <div id="sample-size-1" class="section level4" number="3.12.4">
 <h4><span class="header-section-number">3.12.4</span> Sample size</h4>
@@ -3072,6 +3100,7 @@ can be found at <a href="https://figshare.com/articles/dataset/Datasets_and_Code
 number of individuls tracked/sampled to determine statistical clarity of
 a hypothesized population mean effect in the
 <code>TraditionalHSF.Rmd</code> file.</p>
+<p><br></p>
 </div>
 </div>
 <div id="considering-context-in-habitat-selection-analyses" class="section level3" number="3.13">
@@ -3133,6 +3162,7 @@ selection and fit a single model with all the data.</p>
 of the true values of -2 or 2. It’s somewhat in between near zero.
 Essentially, when animals are selecting difference habitats because of
 behavior, mixing across behaviors can lead to a muddle inference.</p>
+<p><br></p>
 </div>
 <div id="interpreting-coefficients-and-predicting" class="section level3" number="3.14">
 <h3><span class="header-section-number">3.14</span> 14. Interpreting
@@ -3140,12 +3170,14 @@ coefficients and predicting</h3>
 <p>Interpreting coefficients and predicting is outlined above in
 subsection
 <code>7. What are habitat-selection functions used for?</code>.</p>
+<p><br></p>
 </div>
 <div id="model-selection" class="section level3" number="3.15">
 <h3><span class="header-section-number">3.15</span> 15. Model
 selection</h3>
 <p>If focused on inference, fitting a single model is not only okay, but
 desirable.</p>
+<p><br></p>
 </div>
 <div id="concluding-remarks" class="section level3" number="3.16">
 <h3><span class="header-section-number">3.16</span> 16. Concluding
@@ -3153,6 +3185,7 @@ remarks</h3>
 <p>We hope this vignette proided some utility. If so, let us know with
 an email (<a href="mailto:brian.gerber@colostate.edu" class="email">brian.gerber@colostate.edu</a>).</p>
 <p>Have a nice day.</p>
+<p><br></p>
 </div>
 </div>
 <div id="software" class="section level2" number="4">

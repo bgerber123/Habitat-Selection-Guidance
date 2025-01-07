@@ -9,7 +9,7 @@ Gerber, BD, Setash, C, Ivan, JS and Northrup, JM. A plain language review and gu
 ## What's in this repository?
 
 This repository comprises two main R markdown files and associated files to compile them into HTML and markdown files. You can download all files
-in this [Zip](HSF.Guide.Files.zip)
+in this [Zip](HSF.Guide.Files.zip).
 
 ## Viewing
 

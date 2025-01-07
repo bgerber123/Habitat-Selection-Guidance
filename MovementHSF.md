@@ -1,7 +1,7 @@
 ---
 title: "Movement-based Habitat Selection <br> Guidance"
 author: "Brian D. Gerber, Casey Setash, Jacob S. Ivan. and Joseph M. Northrup"
-date: "2024-1-3"
+date: "2024-01-06"
 output: 
   html_document:
     toc: true
@@ -44,6 +44,8 @@ This vignette is associated with the manuscript titled, 'A plain language review
 
 *Note:* some of the code-chunks are not automatically displayed. To show the code, select 'show'. 
 
+<br>
+
 ## Setup
 
 ### Environment
@@ -79,6 +81,8 @@ First, load required R packages, source two local functions, and load an object 
 # Load spatial covariates stored in a save R object
   load("./data/Covs")
 ```
+
+<br>
 
 ### Simulate data
 
@@ -370,17 +374,24 @@ LETTERS702 <- c(LETTERS, sapply(LETTERS, function(x) paste0(x, LETTERS)))
 ## 405              A1
 ```
 
+<br>
+
 ## Manuscript sections
 
 We are now ready to fit models to estimate our movement-based habitat selection parameters and demonstrate points made in the manuscript. We have organized the sections below to match with the sections of the manuscript. 
+<br>
 
 ### What is habitat?
 
 Definitions only.
 
+<br>
+
 ### What is habitat selection?
 
 Definitions only.
+
+<br>
 
 ### What is a habitat-selection function?
 
@@ -388,15 +399,21 @@ Definitions only.
 
 We want to remind the reader of the nuance between a habitat selection function and the statistical model we will be fitting. The model we are fitting (as coded) and the true underlying model (weighted distribution of spatio-temporal model) is not the habitat selection function. The habitat selection function is a component of the model. We will approximate the true model in two different ways: 1) using a conditional logistic regression model and 2) using a Poisson regression model with stratum-specific fixed intercepts ([Muff et al. 2019](https://doi.org/10.1111/1365-2656.13087)). Each approach is used to estimate parameters within the movement-based habitat selection function. We will use the same data set to show the equivalence of the estimated parameters.
 
+<br>
+
 ### What about scale?
 
 Definitions only.
 
 In our data setup and analysis we will be estimating habitat selection at the fourth-order of the scales defined in Johnson (1980). 
 
+<br>
+
 ### Why ‘habitat selection function’ and not ‘resource selection function’?
 
 Definitions only.
+
+<br>
 
 ### Considering objectives and data collection
 
@@ -408,10 +425,13 @@ The individual's location data used to fit a movement-based HSF model is often s
 
 One way to standardize the time differences is by designing the data setup such that relocations are specified into tracks based on a threshold tolerance of allowable time between consecutive spatial locations (e.g., done in the R package amt; [Signer et al. 2019](https://doi.org/10.1002/ece3.4823)). In other words, resampling the GPS locations at regular intervals. Another way is to fit a continuous time movement model to then predict locations at a standarized interval (e.g., [Northrup et al. 2018]( https://doi.org/10.1111/gcb.13037) and [Johnson et al. 2008](https://doi.org/10.1890/07-1032.1))
 
+<br>
+
 ### What are habitat-selection functions used for?
 
 In this section, we discuss some mechanics of inference and prediction, as in interpreting coefficients and predicting relative habitat selection. We will walk through the basics here, but refer the reader to full in depth coverage in [Fieberg et al. 2021](https://doi.org/10.1111/1365-2656.13441) and [Avgar et al. 2017](https://doi.org/10.1002/ece3.3122). We also mention the goal of using habitat selection to predict animal abundance. Demonstrating this is beyond our work. We suggest starting with the reading of section 1.6, "When is species density a reliable reflection of habitat suitability?" of [Matthiopoulos, Fieberg, and Aarts, 2023](http://hdl.handle.net/11299/217469).
 
+<br>
 
 #### Inference
 
@@ -439,7 +459,6 @@ Let's fit a model to one individual's matched used and available data and discus
 We are now ready to approximate our true model using two difference approaches: the conditional logistic regression model and the Poisson regression model.
 
 First, we can accomplish the first apporach using the `clogit function` in package `survival`. We have related our response variable of the used and available sample (`status`) to our covariates and tell the model how the 1's and 0's are matched with the variable `strata`, which is part of the linear equation but wrapped by an internal function `strata`. Note that the variable combinations are one of an additive model, as opposed to having interactions.  
-
 
 ``` r
   model1 = clogit(status ~ dist.dev + forest + shrub + strata(strata), 
@@ -486,6 +505,8 @@ Next, we have estimated the effect of `shrub` as 0.84. This estimate is positive
 
 The above output also conveniently shows us the exponentiation of each coefficient. This is helpful because `exp(coefficient)` "quantifies the relative intensity of use of two locations that differ by 1 standard deviation unit of [the variable] but are otherwise equivalent (i.e. they are equally available and have the same values of all other habitat covariates)" ([Fieberg et al. 2021](https://doi.org/10.1111/1365-2656.13441)).
 
+<br>
+
 ##### **Other Functions**
 
 We can estimate the same parameters and get the very same estimates with other functions that implement the conditional logistic regression model. For example, the functions `fit_clogit` or `fit_ssf` in the `amt` package. These are are wrapper functions for using the `survival clogit` function. We can see what the function is doing:
@@ -516,7 +537,7 @@ amt::fit_ssf
 ##     }
 ##     m
 ## }
-## <bytecode: 0x000001cd3642a8c8>
+## <bytecode: 0x000001cfbac5e7e0>
 ## <environment: namespace:amt>
 ```
 
@@ -563,6 +584,8 @@ Now lets use these functions to estimate the same coefficients as we did with `c
 ```
 
 We can see the estimated coefficients are all the same. 
+
+<br>
 
 ##### **Poisson model equivalence to the conditional logistic model**
 
@@ -645,6 +668,8 @@ We find the same exact estimates. Woohoo!
 
 Note that in the fixed effect implementation (model1.tmb) we are actually estimating a lot of partial intercepts (strata). However, we can ignore them as they are not of interest, just a means to an end. That is why in the above code, we are limiting the estimates from the summary with the part `cond[2:4,]`
 
+<br>
+
 ##### **Relative Selection**
 
 How do we quantitatively evaluate two locations in terms of habitat selection using our model results? We can do so using Equation 8 of [Fieberg et al. 2021](https://doi.org/10.1111/1365-2656.13441).
@@ -667,7 +692,9 @@ Perhaps we want to compare a location that is very near development (dist.dev = 
 ```
 If given equal availability, this individual would relatively select the first location by a factor of 664.79. 
 
-**Relative Selection Strength**
+<br>
+
+##### **Relative Selection Strength**
  
 [Avgar et al. 2017](https://doi.org/10.1002/ece3.3122) refers to the relative selection strength (RSS) as the exponentiation of each coefficient. 
 
@@ -685,6 +712,8 @@ For example,
 ```
 
 Given two locations that differ by 1 standard deviation of percent forest (`forest`), but are otherwise equal, this individual would be 0.65 as likely to choose the location with higher `forest`, or equivalently, 1.53 times more likely to choose the location with the lower `forest.`
+
+<br>
 
 #### Prediction
 
@@ -738,13 +767,19 @@ For convenience, we can use the `log_rss` function of the `amt` package to predi
 
 We have predicted a mean (solid line) and 95% confidence intervals (dotted) of the log-RSS between each value of s1 relative to s2. These locations differ only in their values of `dist.dev`, and the log-RSS is equal to 0 when the two locations are identical (i.e.,  dist.dev = 0). Above the zero line the individual is selected more than available and below the zero line they are selecting less than available.
 
+<br>
+
 ### Traditional HSF or SSF?
 
 In fitting these data using a movement-based HSF, we are simultaneously trying to account for two important assumptions. First, we are limiting what is available to the animal at each used location by defining the availability as around this area and informed by the movement parameters of step-length (how far is the animal likely to go) and step-length (what direction is the animal likely to go). Second, we are defining our data setup to deal with the fine-scale sequential dependency of consecutive relocations and minimize issues of autocorrelation. If there is interest in using these same data at a lower selection-order, its important to consider the issues of autocorrelation and availability. In the manuscript, we provide two options for doing so. 
 
+<br>
+
 ### The model being fit
 
 Context only.
+
+<br>
 
 ### The model being approximated
 
@@ -800,7 +835,6 @@ lines(coef.save$N.Avail, coef.save$beta3,lwd=3,col=2)
 ```{.r .fold-hide}
 #knitr::kable(coef.save,digits=3)
 ```
-
 
 We can see that our estimates of the slope coefficients are sensitive to the number of available locations. The estimates visually stabilize after about 80 available locations per used location. 
 
@@ -879,6 +913,8 @@ ggplot2::ggplot(plot.data, aes(N.Available.Sample, Coefficient.Estimate, fill=fa
 ![](MovementHSF_files/figure-html/plot.sensitive-1.png)<!-- -->
 
 We see more easily in this plot that there is high variability in the estimated coefficients  when the available sample is small. This variability decreases as the available sample grows, showing how the estimates are stabilizing. 
+
+<br>
 
 ### Individuals 
 
@@ -1084,16 +1120,21 @@ The plot on the right are the pooled estimates for $\beta_1$ (black; dist.dev), 
 
 Since our sample sizes for each individual are equal, we see that the pooled estimates generally relate to the average of each estimate across all individuals. When the number of used locations varies by individual this won't be the case. The individuals with more used locations will disproportionately influence the pooled estimates. 
 
+<br>
+
 #### Sample size
 
 The code for implementing the methods of [Street et al. 2021](https://doi.org/10.1111/2041-210X.13701) can be found at [figshare](https://figshare.com/articles/dataset/Datasets_and_Code_zip/11910831). 
 
 You can also find an implementation of these methods to calculate the number of used locations to determine statistical clarity of a hypothesized spatial effect in the [Traditional HSF example] (https://bgerber123.github.io/hsfguide/TraditionalHSF.html#311_Individuals) 
 
+<br>
 
 ### Population inference
 
 If we are interested in obtaining inference to the individual- and population-level effects, we can consider bootstrapping the results from individual models or jointly fitting a single model with a random effect across individuals. We will first consider the bootstrapping method. Second, we will demonstrate the use of random intercepts and slopes, as well as how to fix the variance of the random intercept so there is no shrinkage. 
+
+<br>
 
 #### Bootstrapping
 
@@ -1252,6 +1293,8 @@ The random components- these are the effect differences for each variation from 
 
 A random intercepts only model is not recommended. 
 
+<br>
+
 #### Random intercept and slopes model
 
 This is the recommended model structure using random effects. 
@@ -1295,7 +1338,6 @@ Let's look at the results. Here, we have the population-level (across) individua
 ```
 
 We can get estimates with 95% confidence intervals as well. We see that these statements are supported statistically in the above statement based on examining whether intervals include 0 or not. 
-
 
 
 ``` r
@@ -1455,12 +1497,15 @@ Another thing to notice is that the population level effect for forest is not st
 
 Our plot shows the individual effects of `forest` (vertical lines) along with the population-level mean and confidence intervals (horizontal lines). What is clear is that the reason there is no statistically clear difference of the population-level effect from zero is because there is a wide range of effects across individuals. Some individuals have slightly positive coefficients and some have slightly negative. Since these are generally equal, they balance out to a population-level effect of zero. The story is more complicated! To decide on statistical clarity between an individual's effect and the population, you can go back to the confidence intervals of the estimated effect differences. 
 
+<br>
 
 #### Sample size
 
 The code for implementing the methods of [Street et al. 2021](https://doi.org/10.1111/2041-210X.13701) can be found at [figshare](https://figshare.com/articles/dataset/Datasets_and_Code_zip/11910831). 
 
 You can also find an implementation of these methods to calculate the number of individuls tracked/sampled to determine statistical clarity of a hypothesized population mean effect in the `TraditionalHSF.Rmd` file. 
+
+<br>
 
 ### 13. Considering context in habitat selection analyses
 
@@ -1525,20 +1570,27 @@ Lets fit a model where we ignore the behavioral differences in selection and fit
 
 We see that the estimated forest coefficient is not near the values of the true values of -2 or 2. It's somewhat in between near zero. Essentially, when animals are selecting difference habitats because of behavior, mixing across behaviors can lead to a muddle inference. 
 
+<br>
 
 ### 14. Interpreting coefficients and predicting
 
 Interpreting coefficients and predicting is outlined above in subsection `7. What are habitat-selection functions used for?`.
 
+<br>
+
 ### 15. Model selection
 
 If focused on inference, fitting a single model is not only okay, but desirable. 
+
+<br>
 
 ### 16. Concluding remarks
 
 We hope this vignette proided some utility. If so, let us know with an email (brian.gerber@colostate.edu). 
 
 Have a nice day.
+
+<br>
 
 ## Software
 

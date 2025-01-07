@@ -11,6 +11,7 @@
 
 <meta name="author" content="Brian D. Gerber, Casey Setash, Jacob S. Ivan. and Joseph M. Northrup" />
 
+<meta name="date" content="2024-01-06" />
 
 <title>Traditional Habitat Selection   Guidance</title>
 
@@ -1570,7 +1571,7 @@ border-radius: 0px;
 Guidance</h1>
 <h4 class="author">Brian D. Gerber, Casey Setash, Jacob S. Ivan. and
 Joseph M. Northrup</h4>
-<h4 class="date">2024-1-3</h4>
+<h4 class="date">2024-01-06</h4>
 
 </div>
 
@@ -1605,6 +1606,7 @@ models to estimate traditional habitat selection functions (HSF) at the
 third-order of selection (e.g. selection within the home range).</p>
 <p><em>Note:</em> some of the code-chunks are not automatically
 displayed. To show the code, select ‘show’.</p>
+<p><br></p>
 </div>
 <div id="setup" class="section level2" number="2">
 <h2><span class="header-section-number">2</span> Setup</h2>
@@ -1633,6 +1635,7 @@ displayed. To show the code, select ‘show’.</p>
 
 # Load spatial covariate data (used for power analysis)
   load(&quot;./data/Covs&quot;)</code></pre>
+<p><br></p>
 </div>
 <div id="simulate-data" class="section level3" number="2.2">
 <h3><span class="header-section-number">2.2</span> Simulate data</h3>
@@ -1839,6 +1842,7 @@ respectively.</p>
 ## 2556      1 -1.73908829 0.714554879 0.6718038  1      1
 ## 2241      1 -0.73270288 0.738071773 0.5666879  1      1
 ## 498       1  0.09237958 0.246186710 0.8294609  1      1</code></pre>
+<p><br></p>
 </div>
 </div>
 <div id="manuscript-sections" class="section level2" number="3">
@@ -1848,14 +1852,17 @@ sections</h2>
 parameters and demonstrate points made in the manuscript. We have
 organized the sections below to generally match with the sections of the
 manuscript.</p>
+<p><br></p>
 <div id="what-is-habitat" class="section level3" number="3.1">
 <h3><span class="header-section-number">3.1</span> What is habitat?</h3>
 <p>Definitions only.</p>
+<p><br></p>
 </div>
 <div id="what-is-habitat-selection" class="section level3" number="3.2">
 <h3><span class="header-section-number">3.2</span> What is habitat
 selection?</h3>
 <p>Definitions only.</p>
+<p><br></p>
 </div>
 <div id="what-is-a-habitat-selection-function" class="section level3" number="3.3">
 <h3><span class="header-section-number">3.3</span> What is a
@@ -1871,6 +1878,7 @@ Binomial Regression Model) to approximate the IPP model, in which our
 estimated parameters will be the parameters within the habitat selection
 function. To understand the model, see equation 1 of <a href="https://doi.org/10.1002/ecy.2953">Gerber and Northrup,
 2020</a>.</p>
+<p><br></p>
 </div>
 <div id="what-about-scale" class="section level3" number="3.4">
 <h3><span class="header-section-number">3.4</span> What about
@@ -1894,11 +1902,13 @@ assumed independence between consecutive spatial locations (e.g., kernel
 density estimation) or whether spatial autocorrelation is due to a
 high-frequency of sampling (e.g., short fix interval between relocations
 relative to the animals speed; movement-based kernel estimator).</p>
+<p><br></p>
 </div>
 <div id="why-habitat-selection-function-and-not-resource-selection-function" class="section level3" number="3.5">
 <h3><span class="header-section-number">3.5</span> Why ‘habitat
 selection function’ and not ‘resource selection function’?</h3>
 <p>Definitions only.</p>
+<p><br></p>
 </div>
 <div id="considering-objectives-and-data-collection" class="section level3" number="3.6">
 <h3><span class="header-section-number">3.6</span> Considering
@@ -1926,6 +1936,7 @@ includes the most important variables for the species and for your
 question that you want to consider so that estimated effects and
 measures of uncertainty are reliable (<a href="https://doi.org/10.32942/X2Z01P">Bolker 2023</a>, <a href="https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecy.3336">Tredennick
 et al. 2021</a>).</p>
+<p><br></p>
 </div>
 <div id="what-are-habitat-selection-functions-used-for" class="section level3" number="3.7">
 <h3><span class="header-section-number">3.7</span> What are
@@ -1940,6 +1951,7 @@ abundance. Demonstrating this is beyond our work. We suggest starting
 with the reading of section 1.6, “When is species density a reliable
 reflection of habitat suitability?” of <a href="http://hdl.handle.net/11299/217469">Matthiopoulos, Fieberg, and
 Aarts, 2023</a>.</p>
+<p><br></p>
 <div id="inference" class="section level4" number="3.7.1">
 <h4><span class="header-section-number">3.7.1</span> Inference</h4>
 <p>Let’s fit a model to one individual’s used and available data and
@@ -2018,6 +2030,7 @@ variables in the model) are held at their mean that habitat selection
 increases relative to what is available to this individual. At our
 defined Type I error we do have statistical clarity of an effect that is
 not zero (p-value = 8.2627753^{-7}).</p>
+<p><br></p>
 <div id="other-functions" class="section level5" number="3.7.1.1">
 <h5><span class="header-section-number">3.7.1.1</span> <strong>Other
 functions</strong></h5>
@@ -2063,8 +2076,9 @@ function in the <code>stats</code> package as:</p>
 ##     class(m) &lt;- c(&quot;fit_logit&quot;, &quot;glm&quot;, class(m))
 ##     m
 ## }
-## &lt;bytecode: 0x0000018baa68ad28&gt;
+## &lt;bytecode: 0x000002b92671cc10&gt;
 ## &lt;environment: namespace:amt&gt;</code></pre>
+<p><br></p>
 </div>
 <div id="relative-selection" class="section level5" number="3.7.1.2">
 <h5><span class="header-section-number">3.7.1.2</span> <strong>Relative
@@ -2092,6 +2106,7 @@ setup, we have assumed the habitat selection process follows an
 exponential form (see section 10. The model being approximated) and
 equation 1 of <a href="https://doi.org/10.1002/ecy.2953">Gerber and
 Northrup, 2020</a>.</p>
+<p><br></p>
 </div>
 <div id="relative-selection-strength" class="section level5" number="3.7.1.3">
 <h5><span class="header-section-number">3.7.1.3</span> <strong>Relative
@@ -2108,6 +2123,7 @@ each coefficient.</p>
 but are otherwise equal, this individual would be 1.1324727 as likely to
 choose the location with higher dist.dev (or, equivalently, 0.8830235
 times more likely to choose the location with the lower dist.dev.</p>
+<p><br></p>
 </div>
 </div>
 <div id="prediction" class="section level4" number="3.7.2">
@@ -2160,6 +2176,7 @@ areas far from development (high values on x-axis) and select for areas
 close to development (low values on x-axis).</p>
 <p>We can use this same process to extract values across spatial layers
 to predict relative habitat selection that is mapped.</p>
+<p><br></p>
 </div>
 </div>
 <div id="traditional-hsf-or-ssf" class="section level3" number="3.8">
@@ -2174,6 +2191,7 @@ individual has a different set, based on their home-range (remember this
 is not explicitly how we sampled, but it is implied). Second, we are
 assuming that each used location is independent from each other. Lets
 consider the implications of violating these assumptions.</p>
+<p><br></p>
 <div id="critical-assumption-1-accessibility-of-habitat" class="section level4" number="3.8.1">
 <h4><span class="header-section-number">3.8.1</span> Critical Assumption
 1: Accessibility of habitat</h4>
@@ -2244,6 +2262,7 @@ an important reminder that our estimated effects highly depend on our
 assumptions of what is available to each animal. We want to avoid
 including available locations that are in fact inaccessible to the
 animal because it will change our inference in unknown ways.</p>
+<p><br></p>
 </div>
 <div id="critical-assumption-2-independence-of-location-data" class="section level4" number="3.8.2">
 <h4><span class="header-section-number">3.8.2</span> Critical Assumption
@@ -2352,12 +2371,14 @@ intervals for our estimates and predictions. It also means that our
 p-values are too small. Notice that our coefficient for forest is now
 statistically clearly different than zero (p-value of 0.0187789) while
 it was not so using only independent data (p-value of 0.0838469).</p>
+<p><br></p>
 </div>
 </div>
 <div id="the-model-being-fit" class="section level3" number="3.9">
 <h3><span class="header-section-number">3.9</span> The model being
 fit</h3>
 <p>Context only.</p>
+<p><br></p>
 </div>
 <div id="the-model-being-approximated" class="section level3" number="3.10">
 <h3><span class="header-section-number">3.10</span> The model being
@@ -2529,6 +2550,7 @@ do not want. The intercept estimates decrease in the variability but
 also continues to decline. It is up to each researcher to conduct a
 similar sensitivity analysis to see how many available samples are
 necessary for the coefficient estimates to stabilize.</p>
+<p><br></p>
 </div>
 <div id="individuals" class="section level3" number="3.11">
 <h3><span class="header-section-number">3.11</span> Individuals</h3>
@@ -2688,6 +2710,7 @@ pooled estimates generally relate to the average of each estimate across
 all individuals. When the number of used locations varies by individual
 this won’t be the case. The individuals with more used locations will
 disproportionately influence the pooled estimates.</p>
+<p><br></p>
 <div id="sample-size" class="section level4" number="3.11.1">
 <h4><span class="header-section-number">3.11.1</span> Sample size</h4>
 <p>A common question is how many used locations for a given individual
@@ -2862,6 +2885,7 @@ have more statistical power at lower sample sizes. Intuitively, as the
 landscape becomes more heterogeneous, it should be easier (i.e., fewer
 used samples needed) to identify their relative selection of each
 habitat type.</p>
+<p><br></p>
 </div>
 </div>
 <div id="population-inference" class="section level3" number="3.12">
@@ -2874,6 +2898,7 @@ across individuals. We will first consider the bootstrapping method.
 Second, we will demonstrate the use of random intercepts and slopes, as
 well as how to fix the variance of the random intercept so there is no
 shrinkage.</p>
+<p><br></p>
 <div id="bootstrapping" class="section level4" number="3.12.1">
 <h4><span class="header-section-number">3.12.1</span> Bootstrapping</h4>
 <p>The core functions for bootstrapping are adopted from Dr. Guillaume
@@ -2947,6 +2972,7 @@ mean and 95% lower and upper confidence intervals are outputted.</p>
 </tr>
 </tbody>
 </table>
+<p><br></p>
 </div>
 <div id="random-effects-across-individuals" class="section level4" number="3.12.2">
 <h4><span class="header-section-number">3.12.2</span> Random effects
@@ -3036,6 +3062,7 @@ ensure there is no shrinkage.</p>
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>A random intercepts only model is not recommended.</p>
+<p><br></p>
 </div>
 <div id="alternative-to-random-intercept-only-model" class="section level5" number="3.12.2.2">
 <h5><span class="header-section-number">3.12.2.2</span> Alternative to
@@ -3047,16 +3074,16 @@ sample sizes. We can accomplish the same thing using a fixed-effect only
 model and thus not need to fix any random effect variance. Specifically,
 we can do that by setting up a design matrix using contrast sums, also
 know as effecting coding.</p>
-<pre class="r"><code>#Make ID a factor
+<pre class="r"><code># Make ID a factor
   sims2$ID=as.factor(sims2$ID)
 
-#Setup a design matrix with individual ID&#39;s
+# Setup a design matrix with individual ID&#39;s
   X = model.matrix(~ID,
                    data = sims2,
                    contrasts.arg =list(ID=&quot;contr.sum&quot;)
                    )
 
-# fixed effect intercepts that vary by individual
+# Fixed effect intercepts that vary by individual
   fix_int = glmmTMB(status ~ 0 + X + dist.dev + forest + shrub, 
                    family = binomial(), 
                    data = sims2
@@ -3261,6 +3288,7 @@ is not being used in the manner we usually might use it. Choosing to
 using a random effect with a large fixed variance of fixed effects can
 be chosen based on convenience. There may be some convenience to the
 random effect process when there are many individuals.</p>
+<p><br></p>
 </div>
 </div>
 <div id="random-intercept-and-slopes-model" class="section level4" number="3.12.3">
@@ -3424,6 +3452,7 @@ accommodating different sample sizes with the random intercepts.
 However, one could use the trick from above to allow intercepts to vary
 by individual using fixed effects and then only use random effects for
 the spatial variables.</p>
+<p><br></p>
 </div>
 <div id="sample-size-1" class="section level4" number="3.12.4">
 <h4><span class="header-section-number">3.12.4</span> Sample size</h4>
@@ -3471,7 +3500,6 @@ for(i in 1:M){
       N.variance = c(N.variance, N.temp$variance)
 }  
   
-
 # Assume the same number of locations per individual
   N = rep(1000,M)
 
@@ -3592,6 +3620,7 @@ for(z in 1:length(beta_s)){
 that “Note that [Equation 8] is a non-decreasing function of <span class="math inline">\(\sigma^2\)</span>, meaning that more variation
 among individuals is likely to mean one has to sample a higher number of
 animals.</p>
+<p><br></p>
 </div>
 </div>
 <div id="considering-context-in-habitat-selection-analyses" class="section level3" number="3.13">
@@ -3665,6 +3694,7 @@ selection and fit a single model with all the data.</p>
 values of -2 or 2. It’s somewhat in between - near zero. Essentially,
 when animals are selecting different habitat features because of
 behavior, mixing across behaviors can lead to a muddled inference.</p>
+<p><br></p>
 </div>
 <div id="interpreting-coefficients-and-predicting" class="section level3" number="3.14">
 <h3><span class="header-section-number">3.14</span> Interpreting
@@ -3672,11 +3702,13 @@ coefficients and predicting</h3>
 <p>Interpreting coefficients and predicting is outlined above in
 subsection
 <code>3.7. What are habitat-selection functions used for?</code>.</p>
+<p><br></p>
 </div>
 <div id="model-selection" class="section level3" number="3.15">
 <h3><span class="header-section-number">3.15</span> Model selection</h3>
 <p>If focused on inference, fitting a single model is not only okay, but
 desirable.</p>
+<p><br></p>
 </div>
 <div id="concluding-remarks" class="section level3" number="3.16">
 <h3><span class="header-section-number">3.16</span> Concluding
@@ -3684,6 +3716,7 @@ remarks</h3>
 <p>We hope this vignette proided some utility. If so, let us know with
 an email (<a href="mailto:brian.gerber@colostate.edu" class="email">brian.gerber@colostate.edu</a>).</p>
 <p>Have a nice day.</p>
+<p><br></p>
 </div>
 </div>
 <div id="software" class="section level2" number="4">
