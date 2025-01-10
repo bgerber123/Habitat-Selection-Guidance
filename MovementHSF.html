@@ -11,7 +11,7 @@
 
 <meta name="author" content="Brian D. Gerber, Casey Setash, Jacob S. Ivan. and Joseph M. Northrup" />
 
-<meta name="date" content="2024-01-06" />
+<meta name="date" content="2024-01-10" />
 
 <title>Movement-based Habitat Selection   Guidance</title>
 
@@ -1571,7 +1571,7 @@ border-radius: 0px;
 Guidance</h1>
 <h4 class="author">Brian D. Gerber, Casey Setash, Jacob S. Ivan. and
 Joseph M. Northrup</h4>
-<h4 class="date">2024-01-06</h4>
+<h4 class="date">2024-01-10</h4>
 
 </div>
 
@@ -1603,9 +1603,9 @@ flex-direction: row-reverse;
 language review and guidance for modeling animal habitat-selection’. We
 will be demonstrating some of the points from the manuscript on fitting
 models to estimate parameters in a movement-based habitat selection
-function (HSF) or step-selection function (SSF)). The scale of interest
-is the fourth-order of selection (e.g. selection along a track within a
-home range).</p>
+function (HSF), which is also known as a step-selection function (SSF)).
+The scale of interest is the fourth-order of selection (e.g. selection
+along a track within a home range).</p>
 <p><em>Note:</em> some of the code-chunks are not automatically
 displayed. To show the code, select ‘show’.</p>
 <p><br></p>
@@ -2105,9 +2105,9 @@ Functions</strong></h5>
 <p>We can estimate the same parameters and get the very same estimates
 with other functions that implement the conditional logistic regression
 model. For example, the functions <code>fit_clogit</code> or
-<code>fit_ssf</code> in the <code>amt</code> package. These are are
-wrapper functions for using the <code>survival clogit</code> function.
-We can see what the function is doing:</p>
+<code>fit_ssf</code> in the <code>amt</code> package. These are wrapper
+functions for using the <code>survival clogit</code> function. We can
+see what the function is doing:</p>
 <pre class="r"><code>amt::fit_ssf</code></pre>
 <pre><code>## function (data, formula, more = NULL, summary_only = FALSE, ...) 
 ## {
@@ -2129,7 +2129,7 @@ We can see what the function is doing:</p>
 ##     }
 ##     m
 ## }
-## &lt;bytecode: 0x000001cfbac5e7e0&gt;
+## &lt;bytecode: 0x000002b147fa02a8&gt;
 ## &lt;environment: namespace:amt&gt;</code></pre>
 <p>Now lets use these functions to estimate the same coefficients as we
 did with <code>clogit</code>:</p>
@@ -2186,10 +2186,10 @@ large value.</p>
                           doFit = FALSE
                           )
 
-# Make the intercept large and fixed
+# Make the intercept variance large and fixed
   model1.tmb2$parameters$theta[1] = log(1e3)
   
-# Tell glmmTMB to not estimate the intercept  
+# Tell glmmTMB to not estimate the variance of the intercept  
   model1.tmb2$mapArg = list(theta=factor(c(NA)))
   
 # Now ready to fit the model  
@@ -2321,7 +2321,7 @@ al. 2021</a>.</p>
 <p>Perhaps we want to compare a location that is very near development
 (dist.dev = -2) at high forest and shrub cover (forest = 2, shrub = 2)
 with that of a location far from development (dist.dev = 2) and also at
-high forest but low shrub cover (forest =2, shrub = -2).</p>
+high forest but low shrub cover (forest = 2, shrub = -2).</p>
 <pre class="r"><code># Get estimates
   coef = coef(model1)
 
@@ -2330,8 +2330,10 @@ high forest but low shrub cover (forest =2, shrub = -2).</p>
   RS</code></pre>
 <pre><code>## dist.dev 
 ##  664.787</code></pre>
-<p>If given equal availability, this individual would relatively select
-the first location by a factor of 664.79.</p>
+<p>If given equivalent availability between these two types of sites (
+1) near development at high forest and shrub cover, 2) far from
+development at high forest and shrub cover ), this individual would
+relatively select the first location by a factor of 664.79.</p>
 <p><br></p>
 </div>
 <div id="relative-selection-strength" class="section level5" number="3.7.1.4">
@@ -2418,9 +2420,9 @@ autocorrelation and availability. In the manuscript, we provide two
 options for doing so.</p>
 <p><br></p>
 </div>
-<div id="the-model-being-fit" class="section level3" number="3.9">
-<h3><span class="header-section-number">3.9</span> The model being
-fit</h3>
+<div id="the-data-generating-model-and-the-model-being-fit" class="section level3" number="3.9">
+<h3><span class="header-section-number">3.9</span> The data generating
+model and the model being fit</h3>
 <p>Context only.</p>
 <p><br></p>
 </div>
@@ -2759,6 +2761,10 @@ shrinkage.</p>
 <p><br></p>
 <div id="bootstrapping" class="section level4" number="3.12.1">
 <h4><span class="header-section-number">3.12.1</span> Bootstrapping</h4>
+<p>Bootstrapping is a <a href="https://en.wikipedia.org/wiki/Bootstrapping_(statistics)">resampling
+technique</a> used often in statistics to obtain a sampling distribution
+of possible values. We will resample the individual-level coefficents to
+estimate the population-level mean and variation.</p>
 <p>The core functions for bootstrapping are adopted from
 Dr. Bastille-Rousseau’s github repository for the R package <a href="https://github.com/BastilleRousseau/IndRSA/">IndRSA</a>.</p>
 <p>We first need to get all estimated coefficients from each
@@ -2843,6 +2849,12 @@ only model</h5>
 is the use of a random intercept. As described in the manuscript, this
 does not account for variation in the slope coefficients, which is
 problematic.</p>
+<p>While we are using common language in describing the models and model
+fitting process, note that there are very different meanings of
+<code>fixing a parameter</code> (i.e., random intercept variance) versus
+a <code>fixed effect</code>. The former refers to setting a parameter at
+a given value and is not estimated. The later refers to a description of
+a type of parameter that is estimated.</p>
 <pre class="r"><code># Setup HSF with Poisson regression approximation - random intercept model
 # indiv.id.strata indicates individuals and strata and there the variance is fixed so there is no shrinkage
   re_int = glmmTMB(status ~ dist.dev + forest + shrub  +
@@ -2852,10 +2864,10 @@ problematic.</p>
                     doFit=FALSE
                     )
 
-# Make the intercept large and fixed
+# Make the intercept variance large and fixed (i.e., do not estimate).
   re_int$parameters$theta[1] = log(1e3)
   
-# Tell glmmTMB to not estimate the intercept  
+# Tell glmmTMB to not estimate the variance of the intercept  
   re_int$mapArg = list(theta=factor(c(NA)))
   
 # Now ready to fit the model  
@@ -2905,7 +2917,9 @@ number of individuals times the number of strata within individual</p>
 ## shrub        0.86746    0.01513   57.35  &lt; 2e-16 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>A random intercepts only model is not recommended.</p>
+<p><strong>A random intercepts only model is not recommended.</strong>
+This is because we are not dealing with the expected variation of
+responses to hypothesized spatial factors across individuals.</p>
 <p><br></p>
 </div>
 </div>
@@ -2922,10 +2936,10 @@ and slopes model</h4>
                             data = sims2, 
                             doFit = FALSE
                             )
-# make the intercept large and fixed
+# make the intercept variance large and fixed (i.e., do not estimate).
   re_int_slopes$parameters$theta[1] = log(1e3)
   
-# Tell glmmTMB to not estimate the intercept, but 
+# Tell glmmTMB to not estimate the variance of intercept, but 
 # to do so for the other three variables
   re_int_slopes$mapArg = list(theta=factor(c(NA,1:3)))
   
@@ -3081,12 +3095,19 @@ estimate.</p>
 <p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
 <p>Our plot shows the individual effects of <code>forest</code>
 (vertical lines) along with the population-level mean and confidence
-intervals (horizontal lines). What is clear is that the reason there is
-no statistically clear difference of the population-level effect from
-zero is because there is a wide range of effects across individuals.
-Some individuals have slightly positive coefficients and some have
-slightly negative. Since these are generally equal, they balance out to
-a population-level effect of zero. The story is more complicated! To
+intervals (horizontal lines). Compare this output and inference to the
+figure (right-side) for the pooled model fit at the end of Section 3.11.
+In the pooled case we would conclude that at the population level, this
+species avoids forest (i.e., negative coefficient), and we would say
+that with some level of statistical certainty because the confidence
+intervals do not include zero. Here we get a more nuanced picture of
+what’s happening, and that leads to a very different conclusion.</p>
+<p>What is clear from this plot is that the reason there is no
+statistically clear difference of the population-level effect from zero
+is because there is a wide range of effects across individuals. Some
+individuals have slightly positive coefficients and some have slightly
+negative. Since these are generally equal, they balance out to a
+population-level effect of zero. The story is more complicated! To
 decide on statistical clarity between an individual’s effect and the
 population, you can go back to the confidence intervals of the estimated
 effect differences.</p>

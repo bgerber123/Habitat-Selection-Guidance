@@ -1,7 +1,7 @@
 ---
 title: "Traditional Habitat Selection <br> Guidance"
 author: "Brian D. Gerber, Casey Setash, Jacob S. Ivan. and Joseph M. Northrup"
-date: "2024-01-06"
+date: "2024-01-10"
 output: 
   html_document:
     toc: true
@@ -499,7 +499,7 @@ amt::fit_rsf
 ##     class(m) <- c("fit_logit", "glm", class(m))
 ##     m
 ## }
-## <bytecode: 0x000002b92671cc10>
+## <bytecode: 0x000001f42c5ae4d8>
 ## <environment: namespace:amt>
 ```
 
@@ -526,7 +526,7 @@ Perhaps we want to compare a location that is very near development (dist.dev = 
 ## 2801.048
 ```
 
-If given equal availability, this individual would relatively select the first location by a factor of 2801.05.
+If given equivalent availability between these two types of sites ( 1) near development at high forest and shrub cover, 2) far from development at high forest and shrub cover ), this individual would relatively select the first location by a factor of 2801.05.
 
 
 Why are we exponentiating our linear combinations of terms (additions of covariates times estimated coefficients)? This is because in this setup, we have assumed the habitat selection process follows an exponential form (see section 10. The model being approximated) and equation 1 of [Gerber and Northrup, 2020](https://doi.org/10.1002/ecy.2953).
@@ -758,7 +758,7 @@ Okay, so this is not so good. We can see the standard errors of the estimates fr
 
 <br>
 
-### The model being fit
+### The data generating model and the model being fit
 
 Context only.
 
@@ -768,9 +768,9 @@ Context only.
 
 It is the responsibility of each researcher to make sure their modeling process is done such that they are approximating the true underlying Inhomogeneous Poisson Point process (IPP) model well. To demonstrate this, we will consider how estimated coefficients change with increasing numbers of available samples. We will also be able to see how the intercept changes, due its partial (mostly) interpretation as a measure of the ratio of used to available samples.
 
-In practice, there are two components that need to be considered in the approximation. First, is how to sample the complexity of variation in the spatial covariates being considered. Simply, you want to make sure that the spatial variation is captured with these discrete locations by spreading them out well. Second, is to have enough of these samples such that the approximation works well. Capturing the spatial variation is best done by making a systematic grid of locations within the area that is considered available and extracting the covariate values. Having enough available locations can be achieved by having a high density of points for the systematic grid and also by weighting the available locations within the model fitting process.
+In practice, there are two components that need to be considered in the approximation. First, is how to sample the complexity of variation in the spatial covariates being considered. Simply, you want to make sure that the spatial variation is captured with these discrete locations (points placed within the defined spatial region of what is available that will be the available sample and respective covariate values) by spreading them out well. Second, is to have enough of these samples such that the approximation works well. Capturing the spatial variation is best done by making a systematic grid of locations within the area that is considered available and extracting the covariate values. Having enough available locations can be achieved by having a high density of points for the systematic grid and also by weighting the available locations within the model fitting process.
 
-Since we are not explicitly spatially sampling here, we can't directly evaluate how to capture spatial variation, but we can demonstrate how to weight the available locations. Essentially, you want to tell the model that for every used location to weight this data by 1, indicating that there is one of them. For the available locations, you want to weight each location by a large number (e.g.,1000). This tells the model to consider this data as having 1000 of them. You can think of it as a shortcut to replicating this available location and its covariate values 1000 times. Either way works, but weighting is more computationally efficient. Note that this type of replicating of the available sample is a good thing, while replicating the used data (as seen in Critical Assumption 2: Independence of location data) is not a good thing.
+Since we are not explicitly spatially sampling here, we can't directly evaluate how to capture spatial variation, but we can demonstrate how to weight the available locations. Essentially, you want to tell the model that for every used location to weight this data by 1, indicating that there is one of them. For the available locations, you want to weight each location by a large number (e.g.,1000). This tells the model to consider this data as having 1000 of them. You can think of it as a shortcut to replicating this available location and its covariate values 1000 times. Either way works, but weighting is more computationally efficient. By default, weighting should be done in all analyses to help with reducing approximation error. Note that this type of replicating of the available sample is a good thing, while replicating the used data (as seen in Critical Assumption 2: Independence of location data) is not a good thing.
 
 
 ``` r
@@ -909,7 +909,7 @@ ggplot(plot.data, aes(N.Available.Sample, Coefficient.Estimate, fill=factor(Name
 
 ![](TraditionalHSF_files/figure-html/plot.sensitive.org2-1.png)<!-- -->
 
-We see more easily in this plot that there is high variability in the estimated coefficients when the available sample is small. This variability decreases as the available sample grows, showing how the estimates are stabilizing (except the intercept). What this means is that you could grab many different but large available samples and would get almost the same estimated coefficients. This is not true when using a small available sample; your estimated coefficients will vary and we do not want. The intercept estimates decrease in the variability but also continues to decline. It is up to each researcher to conduct a similar sensitivity analysis to see how many available samples are necessary for the coefficient estimates to stabilize.
+We see more easily in this plot that there is high variability in the estimated coefficients when the available sample is small. This variability decreases as the available sample grows, showing how the estimates are stabilizing (except the intercept). What this means is that you could grab many different but large available samples and would get almost the same estimated coefficients. This is not true when using a small available sample; your estimated coefficients will vary and we do not want that. The intercept estimates decrease in the variability but also continues to decline. It is up to each researcher to conduct a similar sensitivity analysis to see how many available samples are necessary for the coefficient estimates to stabilize.
 
 <br>
 
@@ -1183,7 +1183,7 @@ Lets consider varying our Type I error rate ($\alpha$) to see how our sample siz
 
 We we might expect, as we relax the Type I error rate, it is easier to determine statistical clarity at lower sample sizes of used locations.
 
-Next, lets reset $\alpha = 0.05$ and evaluate our sample size requirements when as we change the effect size (i.e., coefficient) of our spatial variable
+Next, lets reset $\alpha = 0.05$ and evaluate our sample size requirements as we change the effect size (i.e., coefficient) of our spatial variable
 
 
 ``` r
@@ -1294,6 +1294,8 @@ If we are interested in obtaining inference to the individual- and population-le
 
 #### Bootstrapping
 
+Bootstrapping is a [resampling technique](https://en.wikipedia.org/wiki/Bootstrapping_(statistics)) used often in statistics to obtain a sampling distribution of possible values. We will resample the individual-level coefficents to estimate the population-level mean and variation.  
+
 The core functions for bootstrapping are adopted from Dr. Guillaume Bastille-Rousseau's github repository for the R package [IndRSA](https://github.com/BastilleRousseau/IndRSA/).
 
 We first need to get all estimated coefficients from each individual.
@@ -1362,7 +1364,9 @@ We now want to summarize our bootstrapped results. The population mean and 95% l
 
 ##### Random intercept only model
 
-The most common use of random effects in habitat selection analysis is the use of a random intercept. As described in the manuscript, this does not account for variation in the slope coefficients, which is problematic. Here, we will allow the intercepts to vary, which accommodates different sample sizes and thus different ratios of used to available samples per each individual (not a major issue in this contrived setting of all individuals having the same sample size). However, if we allowed the random effect variance to be estimated we would get shrinkage towards the mean, which we do not want in this case. Therefore, we will fix the random effect variance to a large value to ensure there is no shrinkage. 
+The most common use of random effects in habitat selection analysis is the use of a random intercept. As described in the manuscript, this does not account for variation in the slope coefficients, which is problematic. Here, we will allow the intercepts to vary, which accommodates different sample sizes and thus different ratios of used to available samples per each individual (not a major issue in this contrived setting of all individuals having the same sample size). However, if we allowed the random effect variance to be estimated we would get shrinkage of the individual-level intercept estimates towards the mean, which we do not want in this case. Therefore, we will fix the random effect variance to a large value to ensure there is no shrinkage. We can do this using a step wise approach, 1) setting up the model and not fitting it, 2) coding the parameter as `NA` and 3) then lastly fitting the model via optimization.  
+
+While we are using common language in describing the models and model fitting process, note that there are very different meanings of `fixing a parameter` (i.e., random intercept variance) versus a `fixed effect`. The former refers to setting a parameter at a given value and is not estimated. The later refers to a description of a type of parameter that is estimated. 
 
 
 ``` r
@@ -1374,7 +1378,7 @@ The most common use of random effects in habitat selection analysis is the use o
                     doFit = FALSE
                     )
 
-# Make the intercept large and fixed
+# Make the intercept variance large and fixed (i.e., do not estimate).
   re_int$parameters$theta[1] = log(1e3)
   
 # Tell glmmTMB to not estimate the intercept  
@@ -1427,6 +1431,9 @@ The most common use of random effects in habitat selection analysis is the use o
 ## 20   -3.267983
 ```
 
+Notice the lack of variability in these estimated individual differences from the overall mean intercept. The reason for this is because we simulated data with the same number of used and available locations, therefore the ration of used to available is the same. These estimates are likely to be  more variable when you have different used sample sizes per individual (total individual animal locations) and are applying the same ratio of available samples. There are many reasons individuals end up having a different number of locations, such as battery life. 
+
+
 ``` r
 # Summarize results  
   summary(re_int)
@@ -1457,7 +1464,8 @@ The most common use of random effects in habitat selection analysis is the use o
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
 
-A random intercepts only model is not recommended.
+**A random intercepts only model is not recommended.** This is because we are not dealing with the expected variation of responses to hypothesized spatial factors across individuals. 
+
 
 <br>
 
@@ -1550,7 +1558,7 @@ kable(round(data.frame(individual = 1:20,int.fe=int.fe,int.re=int.re),digits=2))
 |         18|  -3.23|        -3.23|
 |         19|  -3.33|        -3.33|
 |         20|  -3.26|        -3.27|
-We get the same estimates, again. The point is that the random effect is not being used in the manner we usually might use it. Choosing to using a random effect with a large fixed variance of fixed effects can be chosen based on convenience. There may be some convenience to the random effect process when there are many individuals. 
+We get the same estimates, again. The point is that the random effect is not being used in the manner we usually might use it. Choosing to use a random effect with a large fixed variance (i.e., do not estimate). or fixed effects can be chosen based on convenience. There may be some convenience to the random effect process when there are many individuals. 
 
 <br>
 
@@ -1700,7 +1708,7 @@ summary(re_int_slopes)
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
 
-Note the variance and standard deviation estimates, indicating how variable coefficients are across individuals. We see that `forest` is estimated as the most variable. This corresponds well to how the data were generated with forest coefficients having the highest standard deviation of `beta.sd` which was set as 1.
+Note the variance and standard deviation estimates (fourth column of under the "Conditional Model" section), indicating how variable coefficients are across individuals. We see that `forest` is estimated as the most variable. This corresponds well to how the data were generated with forest coefficients having the highest standard deviation of `beta.sd` which was set as 1.
 
 Another thing to notice is that the population level effect for forest is not statistically clearly different than zero. Thus, at the population level, percent forest is being selected in proportion to what is available to each individual. Let's dive into this a bit more. Let's plot the individual estimates along with the population-level estimate.
 
@@ -1739,7 +1747,9 @@ Another thing to notice is that the population level effect for forest is not st
 
 ![](TraditionalHSF_files/figure-html/RE.plot.forest.indiv.pop-1.png)<!-- -->
 
-Our plot shows the individual effects of `forest` along with the population-level. What is clear is that the reason there is no statistically clear difference of the population-level effect from zero is because there is a wide range of effects across individuals. Some individuals have positive coefficients and some have negative. Since these are generally equal, they balance out to a population-level effect of zero. The story is more complicated!
+Our plot shows the individual effects of `forest` along with the population-level. Compare this output and inference to the figure (right-side) for the pooled model fit at the end of Section 3.11.  In the pooled case we would conclude that at the population level, this species avoids forest (i.e., negative coefficient), and we would say that with some level of statistical certainty because the confidence intervals do not include zero. Here we get a more nuanced picture of what’s happening, and that leads to a very different conclusion.
+
+What is clear from this plot is that the reason there is no statistically clear difference of the population-level effect from zero is because there is a wide range of effects across individuals. Some individuals have positive coefficients and some have negative. Since these are generally equal, they balance out to a population-level effect of zero. The story is more complicated!
 
 The point of this model is that we have effects per each individual and at the population-level for each estimated effect/slope. We also are accommodating different sample sizes with the random intercepts. However, one could use the trick from above to allow intercepts to vary by individual using fixed effects and then only use random effects for the spatial variables. 
 
@@ -2047,3 +2057,5 @@ This report was generated from the R Statistical Software (v4.4.2; R Core Team 2
 |sp                |2.1.4   |@sp2005; @sp2013                               |
 |survival          |3.7.0   |@survival-book; @survival-package              |
 |tidyverse         |2.0.0   |@tidyverse                                     |
+
+

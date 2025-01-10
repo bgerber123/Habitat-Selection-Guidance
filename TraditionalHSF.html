@@ -11,7 +11,7 @@
 
 <meta name="author" content="Brian D. Gerber, Casey Setash, Jacob S. Ivan. and Joseph M. Northrup" />
 
-<meta name="date" content="2024-01-06" />
+<meta name="date" content="2024-01-10" />
 
 <title>Traditional Habitat Selection   Guidance</title>
 
@@ -1571,7 +1571,7 @@ border-radius: 0px;
 Guidance</h1>
 <h4 class="author">Brian D. Gerber, Casey Setash, Jacob S. Ivan. and
 Joseph M. Northrup</h4>
-<h4 class="date">2024-01-06</h4>
+<h4 class="date">2024-01-10</h4>
 
 </div>
 
@@ -2076,7 +2076,7 @@ function in the <code>stats</code> package as:</p>
 ##     class(m) &lt;- c(&quot;fit_logit&quot;, &quot;glm&quot;, class(m))
 ##     m
 ## }
-## &lt;bytecode: 0x000002b92671cc10&gt;
+## &lt;bytecode: 0x000001f42c5ae4d8&gt;
 ## &lt;environment: namespace:amt&gt;</code></pre>
 <p><br></p>
 </div>
@@ -2098,8 +2098,10 @@ high forest but low shrub cover (forest =2, shrub = -2).</p>
   RS</code></pre>
 <pre><code>## dist.dev 
 ## 2801.048</code></pre>
-<p>If given equal availability, this individual would relatively select
-the first location by a factor of 2801.05.</p>
+<p>If given equivalent availability between these two types of sites (
+1) near development at high forest and shrub cover, 2) far from
+development at high forest and shrub cover ), this individual would
+relatively select the first location by a factor of 2801.05.</p>
 <p>Why are we exponentiating our linear combinations of terms (additions
 of covariates times estimated coefficients)? This is because in this
 setup, we have assumed the habitat selection process follows an
@@ -2374,9 +2376,9 @@ it was not so using only independent data (p-value of 0.0838469).</p>
 <p><br></p>
 </div>
 </div>
-<div id="the-model-being-fit" class="section level3" number="3.9">
-<h3><span class="header-section-number">3.9</span> The model being
-fit</h3>
+<div id="the-data-generating-model-and-the-model-being-fit" class="section level3" number="3.9">
+<h3><span class="header-section-number">3.9</span> The data generating
+model and the model being fit</h3>
 <p>Context only.</p>
 <p><br></p>
 </div>
@@ -2394,7 +2396,9 @@ as a measure of the ratio of used to available samples.</p>
 the approximation. First, is how to sample the complexity of variation
 in the spatial covariates being considered. Simply, you want to make
 sure that the spatial variation is captured with these discrete
-locations by spreading them out well. Second, is to have enough of these
+locations (points placed within the defined spatial region of what is
+available that will be the available sample and respective covariate
+values) by spreading them out well. Second, is to have enough of these
 samples such that the approximation works well. Capturing the spatial
 variation is best done by making a systematic grid of locations within
 the area that is considered available and extracting the covariate
@@ -2410,10 +2414,11 @@ want to weight each location by a large number (e.g.,1000). This tells
 the model to consider this data as having 1000 of them. You can think of
 it as a shortcut to replicating this available location and its
 covariate values 1000 times. Either way works, but weighting is more
-computationally efficient. Note that this type of replicating of the
-available sample is a good thing, while replicating the used data (as
-seen in Critical Assumption 2: Independence of location data) is not a
-good thing.</p>
+computationally efficient. By default, weighting should be done in all
+analyses to help with reducing approximation error. Note that this type
+of replicating of the available sample is a good thing, while
+replicating the used data (as seen in Critical Assumption 2:
+Independence of location data) is not a good thing.</p>
 <pre class="r"><code># Grab individual one&#39;s data
   indiv.dat1 = sims[[1]]
 
@@ -2546,8 +2551,8 @@ estimates are stabilizing (except the intercept). What this means is
 that you could grab many different but large available samples and would
 get almost the same estimated coefficients. This is not true when using
 a small available sample; your estimated coefficients will vary and we
-do not want. The intercept estimates decrease in the variability but
-also continues to decline. It is up to each researcher to conduct a
+do not want that. The intercept estimates decrease in the variability
+but also continues to decline. It is up to each researcher to conduct a
 similar sensitivity analysis to see how many available samples are
 necessary for the coefficient estimates to stabilize.</p>
 <p><br></p>
@@ -2793,8 +2798,8 @@ changes. We will hold all other variables constant.</p>
 to determine statistical clarity at lower sample sizes of used
 locations.</p>
 <p>Next, lets reset <span class="math inline">\(\alpha = 0.05\)</span>
-and evaluate our sample size requirements when as we change the effect
-size (i.e., coefficient) of our spatial variable</p>
+and evaluate our sample size requirements as we change the effect size
+(i.e., coefficient) of our spatial variable</p>
 <pre class="r"><code>  n.combs =  40
   N.used = rep(0,n.combs)
   beta.combs=seq(-2,2,length.out=n.combs)
@@ -2901,6 +2906,10 @@ shrinkage.</p>
 <p><br></p>
 <div id="bootstrapping" class="section level4" number="3.12.1">
 <h4><span class="header-section-number">3.12.1</span> Bootstrapping</h4>
+<p>Bootstrapping is a <a href="https://en.wikipedia.org/wiki/Bootstrapping_(statistics)">resampling
+technique</a> used often in statistics to obtain a sampling distribution
+of possible values. We will resample the individual-level coefficents to
+estimate the population-level mean and variation.</p>
 <p>The core functions for bootstrapping are adopted from Dr. Guillaume
 Bastille-Rousseau’s github repository for the R package <a href="https://github.com/BastilleRousseau/IndRSA/">IndRSA</a>.</p>
 <p>We first need to get all estimated coefficients from each
@@ -2988,9 +2997,18 @@ accommodates different sample sizes and thus different ratios of used to
 available samples per each individual (not a major issue in this
 contrived setting of all individuals having the same sample size).
 However, if we allowed the random effect variance to be estimated we
-would get shrinkage towards the mean, which we do not want in this case.
-Therefore, we will fix the random effect variance to a large value to
-ensure there is no shrinkage.</p>
+would get shrinkage of the individual-level intercept estimates towards
+the mean, which we do not want in this case. Therefore, we will fix the
+random effect variance to a large value to ensure there is no shrinkage.
+We can do this using a step wise approach, 1) setting up the model and
+not fitting it, 2) coding the parameter as <code>NA</code> and 3) then
+lastly fitting the model via optimization.</p>
+<p>While we are using common language in describing the models and model
+fitting process, note that there are very different meanings of
+<code>fixing a parameter</code> (i.e., random intercept variance) versus
+a <code>fixed effect</code>. The former refers to setting a parameter at
+a given value and is not estimated. The later refers to a description of
+a type of parameter that is estimated.</p>
 <pre class="r"><code># Setup HSF with logistic regression approximation - random intercept model
 # Do not fit the model
    re_int = glmmTMB(status ~ dist.dev + forest + shrub  + (1|ID), 
@@ -2999,7 +3017,7 @@ ensure there is no shrinkage.</p>
                     doFit = FALSE
                     )
 
-# Make the intercept large and fixed
+# Make the intercept variance large and fixed (i.e., do not estimate).
   re_int$parameters$theta[1] = log(1e3)
   
 # Tell glmmTMB to not estimate the intercept  
@@ -3037,6 +3055,15 @@ ensure there is no shrinkage.</p>
 ## 18   -3.234961
 ## 19   -3.330002
 ## 20   -3.267983</code></pre>
+<p>Notice the lack of variability in these estimated individual
+differences from the overall mean intercept. The reason for this is
+because we simulated data with the same number of used and available
+locations, therefore the ration of used to available is the same. These
+estimates are likely to be more variable when you have different used
+sample sizes per individual (total individual animal locations) and are
+applying the same ratio of available samples. There are many reasons
+individuals end up having a different number of locations, such as
+battery life.</p>
 <pre class="r"><code># Summarize results  
   summary(re_int)</code></pre>
 <pre><code>##  Family: binomial  ( logit )
@@ -3061,7 +3088,9 @@ ensure there is no shrinkage.</p>
 ## shrub        1.060e+00  3.944e-02   26.88  &lt; 2e-16 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>A random intercepts only model is not recommended.</p>
+<p><strong>A random intercepts only model is not recommended.</strong>
+This is because we are not dealing with the expected variation of
+responses to hypothesized spatial factors across individuals.</p>
 <p><br></p>
 </div>
 <div id="alternative-to-random-intercept-only-model" class="section level5" number="3.12.2.2">
@@ -3284,10 +3313,11 @@ kable(round(data.frame(individual = 1:20,int.fe=int.fe,int.re=int.re),digits=2))
 </tbody>
 </table>
 <p>We get the same estimates, again. The point is that the random effect
-is not being used in the manner we usually might use it. Choosing to
-using a random effect with a large fixed variance of fixed effects can
-be chosen based on convenience. There may be some convenience to the
-random effect process when there are many individuals.</p>
+is not being used in the manner we usually might use it. Choosing to use
+a random effect with a large fixed variance (i.e., do not estimate). or
+fixed effects can be chosen based on convenience. There may be some
+convenience to the random effect process when there are many
+individuals.</p>
 <p><br></p>
 </div>
 </div>
@@ -3401,12 +3431,12 @@ population level coefficients.</p>
 ## shrub         1.040308   0.045784  22.722   &lt;2e-16 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>Note the variance and standard deviation estimates, indicating how
-variable coefficients are across individuals. We see that
-<code>forest</code> is estimated as the most variable. This corresponds
-well to how the data were generated with forest coefficients having the
-highest standard deviation of <code>beta.sd</code> which was set as
-1.</p>
+<p>Note the variance and standard deviation estimates (fourth column of
+under the “Conditional Model” section), indicating how variable
+coefficients are across individuals. We see that <code>forest</code> is
+estimated as the most variable. This corresponds well to how the data
+were generated with forest coefficients having the highest standard
+deviation of <code>beta.sd</code> which was set as 1.</p>
 <p>Another thing to notice is that the population level effect for
 forest is not statistically clearly different than zero. Thus, at the
 population level, percent forest is being selected in proportion to what
@@ -3440,7 +3470,14 @@ estimate.</p>
   abline(h=pop.coef.popModel$conf.high,lwd=3,col=2,lty=4)</code></pre>
 <p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
 <p>Our plot shows the individual effects of <code>forest</code> along
-with the population-level. What is clear is that the reason there is no
+with the population-level. Compare this output and inference to the
+figure (right-side) for the pooled model fit at the end of Section 3.11.
+In the pooled case we would conclude that at the population level, this
+species avoids forest (i.e., negative coefficient), and we would say
+that with some level of statistical certainty because the confidence
+intervals do not include zero. Here we get a more nuanced picture of
+what’s happening, and that leads to a very different conclusion.</p>
+<p>What is clear from this plot is that the reason there is no
 statistically clear difference of the population-level effect from zero
 is because there is a wide range of effects across individuals. Some
 individuals have positive coefficients and some have negative. Since

@@ -1,7 +1,7 @@
 ---
 title: "Movement-based Habitat Selection <br> Guidance"
 author: "Brian D. Gerber, Casey Setash, Jacob S. Ivan. and Joseph M. Northrup"
-date: "2024-01-06"
+date: "2024-01-10"
 output: 
   html_document:
     toc: true
@@ -40,7 +40,7 @@ pre {
 
 ## Introduction
 
-This vignette is associated with the manuscript titled, 'A plain language review and guidance for modeling animal habitat-selection'. We will be demonstrating some of the points from the manuscript on fitting models to estimate parameters in a movement-based habitat selection function (HSF) or step-selection function (SSF)). The scale of interest is the fourth-order of selection (e.g. selection along a track within a home range). 
+This vignette is associated with the manuscript titled, 'A plain language review and guidance for modeling animal habitat-selection'. We will be demonstrating some of the points from the manuscript on fitting models to estimate parameters in a movement-based habitat selection function (HSF), which is also known as a step-selection function (SSF)). The scale of interest is the fourth-order of selection (e.g. selection along a track within a home range). 
 
 *Note:* some of the code-chunks are not automatically displayed. To show the code, select 'show'. 
 
@@ -509,7 +509,7 @@ The above output also conveniently shows us the exponentiation of each coefficie
 
 ##### **Other Functions**
 
-We can estimate the same parameters and get the very same estimates with other functions that implement the conditional logistic regression model. For example, the functions `fit_clogit` or `fit_ssf` in the `amt` package. These are are wrapper functions for using the `survival clogit` function. We can see what the function is doing:
+We can estimate the same parameters and get the very same estimates with other functions that implement the conditional logistic regression model. For example, the functions `fit_clogit` or `fit_ssf` in the `amt` package. These are wrapper functions for using the `survival clogit` function. We can see what the function is doing:
 
 
 ``` r
@@ -537,7 +537,7 @@ amt::fit_ssf
 ##     }
 ##     m
 ## }
-## <bytecode: 0x000001cfbac5e7e0>
+## <bytecode: 0x000002b147fa02a8>
 ## <environment: namespace:amt>
 ```
 
@@ -608,10 +608,10 @@ We can see the estimated coefficients are all the same.
 	                      doFit = FALSE
 	                      )
 
-# Make the intercept large and fixed
+# Make the intercept variance large and fixed
   model1.tmb2$parameters$theta[1] = log(1e3)
   
-# Tell glmmTMB to not estimate the intercept  
+# Tell glmmTMB to not estimate the variance of the intercept  
   model1.tmb2$mapArg = list(theta=factor(c(NA)))
   
 # Now ready to fit the model  
@@ -621,7 +621,6 @@ We can see the estimated coefficients are all the same.
 Lets compare the coefficient estimates from these two model fits with one of the clogit fits from above.
 
 **Poisson random intercept (fixed variance)**
-
 
 ``` r
 knitr::kable(summary(model1.tmb2)[[6]]$cond[2:4,],digits=3)
@@ -636,7 +635,6 @@ knitr::kable(summary(model1.tmb2)[[6]]$cond[2:4,],digits=3)
 |shrub    |    0.842|      0.078|  10.729|              0.000|
 **Poisson Fixed effect**
 
-
 ``` r
 knitr::kable(summary(model1.tmb)[[6]]$cond[2:4,],digits=3)
 ```
@@ -648,9 +646,7 @@ knitr::kable(summary(model1.tmb)[[6]]$cond[2:4,],digits=3)
 |dist.dev |   -0.783|      0.089|  -8.838|              0.000|
 |forest   |   -0.427|      0.125|  -3.414|              0.001|
 |shrub    |    0.842|      0.078|  10.729|              0.000|
-
 **clogit model**
-
 
 ``` r
 knitr::kable(summary(model1)[[7]][,-2],digits=3)
@@ -674,7 +670,7 @@ Note that in the fixed effect implementation (model1.tmb) we are actually estima
 
 How do we quantitatively evaluate two locations in terms of habitat selection using our model results? We can do so using Equation 8 of [Fieberg et al. 2021](https://doi.org/10.1111/1365-2656.13441).
 
-Perhaps we want to compare a location that is very near development (dist.dev = -2) at high forest and shrub cover (forest = 2, shrub = 2) with that of a location far from development (dist.dev = 2) and also at high forest but low shrub cover (forest =2, shrub = -2).
+Perhaps we want to compare a location that is very near development (dist.dev = -2) at high forest and shrub cover (forest = 2, shrub = 2) with that of a location far from development (dist.dev = 2) and also at high forest but low shrub cover (forest = 2, shrub = -2).
 
 
 ``` r
@@ -690,7 +686,7 @@ Perhaps we want to compare a location that is very near development (dist.dev = 
 ## dist.dev 
 ##  664.787
 ```
-If given equal availability, this individual would relatively select the first location by a factor of 664.79. 
+If given equivalent availability between these two types of sites ( 1) near development at high forest and shrub cover, 2) far from development at high forest and shrub cover ), this individual would relatively select the first location by a factor of 664.79.
 
 <br>
 
@@ -775,7 +771,7 @@ In fitting these data using a movement-based HSF, we are simultaneously trying t
 
 <br>
 
-### The model being fit
+### The data generating model and the model being fit
 
 Context only.
 
@@ -1138,6 +1134,8 @@ If we are interested in obtaining inference to the individual- and population-le
 
 #### Bootstrapping
 
+Bootstrapping is a [resampling technique](https://en.wikipedia.org/wiki/Bootstrapping_(statistics)) used often in statistics to obtain a sampling distribution of possible values. We will resample the individual-level coefficents to estimate the population-level mean and variation.  
+
 The core functions for bootstrapping are adopted from Dr. Bastille-Rousseau's github repository for the R package [IndRSA](https://github.com/BastilleRousseau/IndRSA/).
 
 We first need to get all estimated coefficients from each individual. 
@@ -1208,6 +1206,8 @@ We now want to summarize our bootstrapped results. The population mean and 95% l
 
 The most common use of random effects in habitat selection analysis is the use of a random intercept. As described in the manuscript, this does not account for variation in the slope coefficients, which is problematic.  
 
+While we are using common language in describing the models and model fitting process, note that there are very different meanings of `fixing a parameter` (i.e., random intercept variance) versus a `fixed effect`. The former refers to setting a parameter at a given value and is not estimated. The later refers to a description of a type of parameter that is estimated. 
+
 
 ``` r
 # Setup HSF with Poisson regression approximation - random intercept model
@@ -1219,10 +1219,10 @@ The most common use of random effects in habitat selection analysis is the use o
                     doFit=FALSE
                     )
 
-# Make the intercept large and fixed
+# Make the intercept variance large and fixed (i.e., do not estimate).
   re_int$parameters$theta[1] = log(1e3)
   
-# Tell glmmTMB to not estimate the intercept  
+# Tell glmmTMB to not estimate the variance of the intercept  
   re_int$mapArg = list(theta=factor(c(NA)))
   
 # Now ready to fit the model  
@@ -1291,7 +1291,7 @@ The random components- these are the effect differences for each variation from 
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
 
-A random intercepts only model is not recommended. 
+**A random intercepts only model is not recommended.** This is because we are not dealing with the expected variation of responses to hypothesized spatial factors across individuals. 
 
 <br>
 
@@ -1310,10 +1310,10 @@ This is the recommended model structure using random effects.
                             data = sims2, 
                             doFit = FALSE
                             )
-# make the intercept large and fixed
+# make the intercept variance large and fixed (i.e., do not estimate).
   re_int_slopes$parameters$theta[1] = log(1e3)
   
-# Tell glmmTMB to not estimate the intercept, but 
+# Tell glmmTMB to not estimate the variance of intercept, but 
 # to do so for the other three variables
   re_int_slopes$mapArg = list(theta=factor(c(NA,1:3)))
   
@@ -1495,7 +1495,10 @@ Another thing to notice is that the population level effect for forest is not st
 
 ![](MovementHSF_files/figure-html/RE.plot.forest.indiv.pop-1.png)<!-- -->
 
-Our plot shows the individual effects of `forest` (vertical lines) along with the population-level mean and confidence intervals (horizontal lines). What is clear is that the reason there is no statistically clear difference of the population-level effect from zero is because there is a wide range of effects across individuals. Some individuals have slightly positive coefficients and some have slightly negative. Since these are generally equal, they balance out to a population-level effect of zero. The story is more complicated! To decide on statistical clarity between an individual's effect and the population, you can go back to the confidence intervals of the estimated effect differences. 
+Our plot shows the individual effects of `forest` (vertical lines) along with the population-level mean and confidence intervals (horizontal lines). Compare this output and inference to the figure (right-side) for the pooled model fit at the end of Section 3.11.  In the pooled case we would conclude that at the population level, this species avoids forest (i.e., negative coefficient), and we would say that with some level of statistical certainty because the confidence intervals do not include zero. Here we get a more nuanced picture of what’s happening, and that leads to a very different conclusion.
+
+
+What is clear from this plot is that the reason there is no statistically clear difference of the population-level effect from zero is because there is a wide range of effects across individuals. Some individuals have slightly positive coefficients and some have slightly negative. Since these are generally equal, they balance out to a population-level effect of zero. The story is more complicated! To decide on statistical clarity between an individual's effect and the population, you can go back to the confidence intervals of the estimated effect differences. 
 
 <br>
 
