@@ -1,7 +1,7 @@
 ---
 title: "Movement-based Habitat Selection <br> Guidance"
 author: "Brian D. Gerber, Casey Setash, Jacob S. Ivan. and Joseph M. Northrup"
-date: "2024-01-10"
+date: "2024-02-10"
 output: 
   html_document:
     toc: true
@@ -153,7 +153,7 @@ We will consider a habitat selection analysis of individuals along a movement tr
 
 ```
 
-We have loaded spatial covariate data that can be found in the object `covs`. Lets look at the three covariates we will consider. The covariates included are the Euclidean distance to nearest development (`dist.dev`), the percent forest cover (`forest`), and the percent shrub cover (`shrub`). Each has been standardized to a mean of 0 and standard deviation of 1; this is a common procedure in linear modeling to help optimization algorithms converge to maximum likelihood estimates and to put each covaraite on the same scale (1 standard deviation of the covariate) so that coefficient magnitudes can be compared.
+We have loaded spatial covariate data that can be found in the object `covs`. Let's look at the three covariates we will consider. The covariates included are the Euclidean distance to nearest development (`dist.dev`), the percent forest cover (`forest`), and the percent shrub cover (`shrub`). Each has been standardized to a mean of 0 and standard deviation of 1; this is a common procedure in linear modeling to help optimization algorithms converge to maximum likelihood estimates and to put each covaraite on the same scale (1 standard deviation of the covariate) so that coefficient magnitudes can be compared.
 
 ```{r covs.plot, class.source = "fold-hide",fig.height=6,fig.width=8}
 # Combine into 1 raster stack
@@ -379,7 +379,7 @@ We can estimate the same parameters and get the very same estimates with other f
 amt::fit_ssf
 ```
 
-Now lets use these functions to estimate the same coefficients as we did with `clogit`:
+Now let's use these functions to estimate the same coefficients as we did with `clogit`:
 
 ```{r amt}
   model1.amt1 = amt::fit_ssf(data = indiv.data1,
@@ -433,7 +433,7 @@ We can see the estimated coefficients are all the same.
   model1.tmb2 = glmmTMB:::fitTMB(model1.tmb2)
 ```
 
-Lets compare the coefficient estimates from these two model fits with one of the clogit fits from above.
+Let's compare the coefficient estimates from these two model fits with one of the clogit fits from above.
 
 **Poisson random intercept (fixed variance)**
 ```{r poisson.clogit.comparison1}
@@ -667,7 +667,7 @@ We see more easily in this plot that there is high variability in the estimated 
 
 ### Individuals 
 
-We should *a priori* assume there is individual variation in habitat selection estimates. This variation is masked when data are pooled. Lets consider the implications of pooling all data vs fitting a model separately to each individual. Note that the object `sims2` has all the individuals combined into a single data frame. We will use the `glmmTMB` function to fit the model using the Poisson model regression approach with strata as a random effect, but that is not really estimated. This is fast and stable implementation. 
+We should *a priori* assume there is individual variation in habitat selection estimates. This variation is masked when data are pooled. Let's consider the implications of pooling all data vs fitting a model separately to each individual. Note that the object `sims2` has all the individuals combined into a single data frame. We will use the `glmmTMB` function to fit the model using the Poisson model regression approach with strata as a random effect, but that is not really estimated. This is fast and stable implementation. 
 
 ```{r pooling, cache=TRUE, warnings=FALSE, error=FALSE, message=FALSE}
 # Pooled model - no consideration of individual variability
@@ -716,7 +716,7 @@ summary(indiv.fit[[10]])
 
 First, notice that the estimated effects are a bit different than the pooled estimates. Importantly, also notice that the standard errors and p-values are larger.
 
-Now lets look at all the estimates together.
+Now let's look at all the estimates together.
 
 ```{r estimate.pool.separate}
 # Extract pooled estimates with Confidence intervals
@@ -782,7 +782,7 @@ plotCI(c(1,1,1),y=pool.effect$estimate[2:4],
        )
 ```
 
-The plot on the right are the pooled estimates for $\beta_1$ (black; dist.dev), $\beta_2$ (red; forest), and $\beta_3$ (green; shrub). The plot on the left are each individual's estimates (colored the same). By ignoring individual variation, we are a much too confident in our estimates of uncertainty and are ignoring a lot of clear variation by individual. The pooled estimate's certainty is do to pseudoreplication - the treating a sub-unit (each location) as are main unit of replication. Our true unit of replication is the individual. 
+The plot on the right are the pooled estimates for $\beta_1$ (black; dist.dev), $\beta_2$ (red; forest), and $\beta_3$ (green; shrub). The plot on the left are each individual's estimates (colored the same). By ignoring individual variation, we are much too confident in our estimates of uncertainty and are ignoring a lot of clear variation by individual. The pooled estimate's certainty is do to pseudoreplication - the treating a sub-unit (each location) as are main unit of replication. Our true unit of replication is the individual. 
 
 Since our sample sizes for each individual are equal, we see that the pooled estimates generally relate to the average of each estimate across all individuals. When the number of used locations varies by individual this won't be the case. The individuals with more used locations will disproportionately influence the pooled estimates. 
 
@@ -804,7 +804,7 @@ If we are interested in obtaining inference to the individual- and population-le
 
 #### Bootstrapping
 
-Bootstrapping is a [resampling technique](https://en.wikipedia.org/wiki/Bootstrapping_(statistics)) used often in statistics to obtain a sampling distribution of possible values. We will resample the individual-level coefficents to estimate the population-level mean and variation.  
+Bootstrapping is a [resampling technique](https://en.wikipedia.org/wiki/Bootstrapping_(statistics)) used often in statistics to obtain a sampling distribution of possible values. We will re-sample the individual-level coefficients to estimate the population-level mean and variation.  
 
 The core functions for bootstrapping are adopted from Dr. Bastille-Rousseau's github repository for the R package [IndRSA](https://github.com/BastilleRousseau/IndRSA/).
 
@@ -959,7 +959,7 @@ We can also extract the estimated difference by individual from the population l
                                    effects = "ran_vals", 
                                    conf.int = TRUE)
 
-#Non-intercept estimates per indivual  
+#Non-intercept estimates per individual  
   ranef.out.ci[-which(ranef.out.ci$term=="(Intercept)"),-c(1,2,3,4)]
 ```
 
@@ -969,7 +969,7 @@ Lastly, we can a full summary of the model.
   summary(re_int_slopes)
 ```
 
-Note the variance and standard deviation estimates, indicating how variable coefficients are across individuals. We see that `forest` is estimated as the most variable. This corresponds well to how the data were generated with forest coefficients having the highest standard deviation of `r beta2.sd``.
+Note the variance and standard deviation estimates, indicating how variable coefficients are across individuals. We see that `forest` is estimated as the most variable. This corresponds well to how the data were generated with forest coefficients having the highest standard deviation of `r beta2.sd`.
 
 Another thing to notice is that the population level effect for forest is not statistically clearly different than zero. Thus, at the population level, percent forest is being selected in proportion to what is available to each individual. Let's dive into this a bit more. Let's plot the individual estimates along with the population-level estimate.
 
@@ -1044,7 +1044,7 @@ In this section we discuss ways of considering behavior in habitat selection ana
   data.ignore$indiv.id.strata=unique(data.ignore$ID+data.ignore$strata*100)
 ```
 
-Lets fit a model where we ignore the behavioral differences in selection and fit a single model with all the data. 
+Let's fit a model where we ignore the behavioral differences in selection and fit a single model with all the data. 
 
 ```{r behav.fit}
   model.ignore.behav =  clogit(status ~ dist.dev + strata(indiv.id.strata), 
@@ -1071,7 +1071,7 @@ If focused on inference, fitting a single model is not only okay, but desirable.
 
 ### 16. Concluding remarks
 
-We hope this vignette proided some utility. If so, let us know with an email (brian.gerber@colostate.edu). 
+We hope this vignette provided some utility. If so, let us know with an email ([brian.gerber\@colostate.edu](mailto:brian.gerber@colostate.edu){.email}).
 
 Have a nice day.
 

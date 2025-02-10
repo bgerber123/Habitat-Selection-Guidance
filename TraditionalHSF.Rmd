@@ -675,7 +675,7 @@ ggplot(plot.data, aes(N.Available.Sample, Coefficient.Estimate, fill=factor(Name
   geom_boxplot()
 ```
 
-We see more easily in this plot that there is high variability in the estimated coefficients when the available sample is small. This variability decreases as the available sample grows, showing how the estimates are stabilizing (except the intercept). What this means is that you could grab many different but large available samples and would get almost the same estimated coefficients. This is not true when using a small available sample; your estimated coefficients will vary and we do not want that. The intercept estimates decrease in the variability but also continues to decline. It is up to each researcher to conduct a similar sensitivity analysis to see how many available samples are necessary for the coefficient estimates to stabilize.
+We see more easily in this plot that there is high variability in the estimated coefficients when the available sample is small. This variability decreases as the available sample grows, showing how the estimates are stabilizing (except the intercept). What this means is that you could grab many different but large available samples and would get almost the same estimated coefficients. This is not true when using a small available sample; your estimated coefficients will vary and we do not want that to happen. The intercept estimates decrease in the variability but also continues to decline. It is up to each researcher to conduct a similar sensitivity analysis to see how many available samples are necessary for the coefficient estimates to stabilize.
 
 <br>
 
@@ -823,7 +823,7 @@ Now, we can define our intercept and slope/effect for this spatial covariate in 
   plot(S.HSF, main = "Relative Intensity of Selection")
 ```
 
-You can think of this covariate as the Normalized Difference Vegetation Index (NDVI) if that makes it easier to visualize. To determine the minimum number of used samples for the covariate and habitat selection values (with coefficient of $\beta[2]$), we need to define our criteria for statistical clarity. Specifically, we are interesting in finding N:
+You can think of this covariate as the Normalized Difference Vegetation Index (NDVI) if that makes it easier to visualize. To determine the minimum number of used samples for the covariate and habitat selection values (with coefficient of $\beta[2]$), we need to define our criteria for statistical clarity. Specifically, we are interested in finding N:
 
 "Recall that $N_{\alpha, p}(\beta)$ was defined to be the minimum number of samples, N, required so that we expect to reject the null hypothesis of $\beta = 0$ (vs. alternative $\beta \neq 0$), at a significance level of $p$, in $100(1 − \alpha)\%$ of experiments". [Street et al. 2021 (Supplementary Appendix A)](https://doi.org/10.1111/2041-210X.13701)
 
@@ -1386,7 +1386,7 @@ Our results agree with the statement from [Street et al. 2021](https://doi.org/1
 
 ### Considering context in habitat selection analyses
 
-In this section we discuss ways of considering behavior in habitat selection analyses. To demonstrate the effect of ignoring behavior, we will simulate data where selection is different for two sets of animal locations. Imagine an animal is highly selective of being in forest landcover when it is resting, but when foraging (and otherwise) it selects against forest in proportion to its availability.
+In this section, we discuss ways of considering behavior in habitat selection analyses. To demonstrate the effect of ignoring behavior, we will simulate data where selection is different for two sets of animal locations. Imagine an animal is highly selective of being in forest landcover when it is resting, but when foraging (and otherwise) it selects against forest in proportion to its availability.
 
 ```{r behav.sim, class.source = "fold-hide"}
 
@@ -1457,7 +1457,7 @@ If focused on inference, fitting a single model is not only okay, but desirable.
 
 ### Concluding remarks
 
-We hope this vignette proided some utility. If so, let us know with an email ([brian.gerber\@colostate.edu](mailto:brian.gerber@colostate.edu){.email}).
+We hope this vignette provided some utility. If so, let us know with an email ([brian.gerber\@colostate.edu](mailto:brian.gerber@colostate.edu){.email}).
 
 Have a nice day.
 
