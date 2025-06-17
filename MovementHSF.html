@@ -11,7 +11,7 @@
 
 <meta name="author" content="Brian D. Gerber, Casey Setash, Jacob S. Ivan. and Joseph M. Northrup" />
 
-<meta name="date" content="2024-02-10" />
+<meta name="date" content="2025-06-17" />
 
 <title>Movement-based Habitat Selection   Guidance</title>
 
@@ -1571,7 +1571,7 @@ border-radius: 0px;
 Guidance</h1>
 <h4 class="author">Brian D. Gerber, Casey Setash, Jacob S. Ivan. and
 Joseph M. Northrup</h4>
-<h4 class="date">2024-02-10</h4>
+<h4 class="date">2025-06-17</h4>
 
 </div>
 
@@ -1919,21 +1919,28 @@ model with stratum-specific fixed intercepts (<a href="https://doi.org/10.1111/1
 Each approach is used to estimate parameters within the movement-based
 habitat selection function. We will use the same data set to show the
 equivalence of the estimated parameters.</p>
+<p>It is also important to differentiate a habitat selection function
+from a habitat selection analysis. As mentioned above, a habit selection
+function is a component of the model we want to fit, while a habitat
+analysis refers to all the steps that are being considered; this
+includes, for example, how the data are setup, the model fit, the
+algorithms used, the inference or predictions from the model, and how
+the model is evaluated.</p>
 <p><br></p>
 </div>
-<div id="what-about-scale" class="section level3" number="3.4">
-<h3><span class="header-section-number">3.4</span> What about
+<div id="habitat-selection-function-or-resource-selection-function" class="section level3" number="3.4">
+<h3><span class="header-section-number">3.4</span> ‘Habitat selection
+function’ or ‘resource selection function’?</h3>
+<p>Definitions only.</p>
+<p><br></p>
+</div>
+<div id="what-about-scale" class="section level3" number="3.5">
+<h3><span class="header-section-number">3.5</span> What about
 scale?</h3>
 <p>Definitions only.</p>
 <p>In our data setup and analysis we will be estimating habitat
 selection at the fourth-order of the scales defined in Johnson
 (1980).</p>
-<p><br></p>
-</div>
-<div id="why-habitat-selection-function-and-not-resource-selection-function" class="section level3" number="3.5">
-<h3><span class="header-section-number">3.5</span> Why ‘habitat
-selection function’ and not ‘resource selection function’?</h3>
-<p>Definitions only.</p>
 <p><br></p>
 </div>
 <div id="considering-objectives-and-data-collection" class="section level3" number="3.6">
@@ -1982,9 +1989,9 @@ way is to fit a continuous time movement model to then predict locations
 at a standarized interval (e.g., <a href="https://doi.org/10.1111/gcb.13037">Northrup et al. 2018</a> and <a href="https://doi.org/10.1890/07-1032.1">Johnson et al. 2008</a>)</p>
 <p><br></p>
 </div>
-<div id="what-are-habitat-selection-functions-used-for" class="section level3" number="3.7">
-<h3><span class="header-section-number">3.7</span> What are
-habitat-selection functions used for?</h3>
+<div id="what-is-the-scientific-goal-of-implementing-a-habitat-selection-function" class="section level3" number="3.7">
+<h3><span class="header-section-number">3.7</span> What is the
+scientific goal of implementing a habitat-selection function?</h3>
 <p>In this section, we discuss some mechanics of inference and
 prediction, as in interpreting coefficients and predicting relative
 habitat selection. We will walk through the basics here, but refer the
@@ -2129,7 +2136,7 @@ see what the function is doing:</p>
 ##     }
 ##     m
 ## }
-## &lt;bytecode: 0x000002173de4b2a8&gt;
+## &lt;bytecode: 0x0000018f48eba2a8&gt;
 ## &lt;environment: namespace:amt&gt;</code></pre>
 <p>Now let’s use these functions to estimate the same coefficients as we
 did with <code>clogit</code>:</p>
@@ -2403,9 +2410,9 @@ available.</p>
 <p><br></p>
 </div>
 </div>
-<div id="traditional-hsf-or-ssf" class="section level3" number="3.8">
-<h3><span class="header-section-number">3.8</span> Traditional HSF or
-SSF?</h3>
+<div id="traditional-habitat-selection-function-hsf-or-step-selection-function-ssf" class="section level3" number="3.8">
+<h3><span class="header-section-number">3.8</span> Traditional habitat
+selection function (HSF) or step-selection function (SSF)?</h3>
 <p>In fitting these data using a movement-based HSF, we are
 simultaneously trying to account for two important assumptions. First,
 we are limiting what is available to the animal at each used location by

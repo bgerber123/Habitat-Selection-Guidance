@@ -8,11 +8,11 @@
 ##     flex-direction: row-reverse;
 ## }
 
-## ----setup, include=FALSE-----------------------------------------------------------------
+## ----setup, include=FALSE---------------------
 knitr::opts_chunk$set(echo = TRUE)
 
 
-## ----packages, results='hide',message=FALSE, class.source = "fold-hide"-------------------
+## ----packages, results='hide',message=FALSE, class.source = "fold-hide"----
 #Load packages
   library(ResourceSelection)
   library(glmmTMB)
@@ -38,7 +38,7 @@ knitr::opts_chunk$set(echo = TRUE)
   load("./data/Covs")
 
 
-## ----setup.parameters, class.source = "fold-hide"-----------------------------------------
+## ----setup.parameters, class.source = "fold-hide"----
 # Number of Sampled individuals (e.g., tracked via GPS telemetry)
   n.indiv = 20
 
@@ -108,7 +108,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 
-## ----simualte.data, cache=TRUE, class.source = "fold-hide"--------------------------------
+## ----simualte.data, cache=TRUE, class.source = "fold-hide"----
 # How many used samples per individual   
   n.used = 500
 
@@ -144,7 +144,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 
-## ----data.examine-------------------------------------------------------------------------
+## ----data.examine-----------------------------
 # Check the dimensions of the data  
 # This should have the same length as n.indiv  
   length(sims)
@@ -155,7 +155,7 @@ knitr::opts_chunk$set(echo = TRUE)
   table(sims[[1]]$status)
 
 
-## ----organize. simualted.data-------------------------------------------------------------
+## ----organize. simualted.data-----------------
 # Combine data into a single data.frame
   sims2 = do.call("rbind", sims)
   head(sims2)
@@ -173,7 +173,7 @@ knitr::opts_chunk$set(echo = TRUE)
   head(sims2)
 
 
-## ----first.fit.inference------------------------------------------------------------------
+## ----first.fit.inference----------------------
 # We will use data from individual #20
   indiv.data20 = sims[[20]]
 
@@ -181,7 +181,7 @@ knitr::opts_chunk$set(echo = TRUE)
   head(indiv.data20)
 
 
-## ----first.fit.inference2-----------------------------------------------------------------
+## ----first.fit.inference2---------------------
 # We have related our response variable of the used and available sample (status) to our covariates. This is an additive model, as opposed to having interactions.  
   model1 = glmmTMB::glmmTMB(status ~ dist.dev + forest + shrub, 
                             family = binomial(), 
@@ -192,7 +192,7 @@ knitr::opts_chunk$set(echo = TRUE)
   summary(model1)
 
 
-## ----first.fit.inference.glm--------------------------------------------------------------
+## ----first.fit.inference.glm------------------
   model1.glm = stats::glm(status ~ dist.dev + forest + shrub, 
                           family = binomial(), 
                           data = indiv.data20 
@@ -200,11 +200,11 @@ knitr::opts_chunk$set(echo = TRUE)
   summary(model1.glm)
 
 
-## ----amt----------------------------------------------------------------------------------
+## ----amt--------------------------------------
 amt::fit_rsf
 
 
-## ----RS-----------------------------------------------------------------------------------
+## ----RS---------------------------------------
 # Get estimates without the intercept
   coef = fixef(model1)[[1]][-1]
 
@@ -213,12 +213,12 @@ amt::fit_rsf
   RS
 
 
-## ----RSS----------------------------------------------------------------------------------
+## ----RSS--------------------------------------
 # Coefficient for dist.dev
   exp(coef[2])
 
 
-## ----predict------------------------------------------------------------------------------
+## ----predict----------------------------------
 # Force the intercept to be zero without any error
   model1$fit$par[1] = 0
   model1$sdr$par.fixed[1] = 0
@@ -246,7 +246,7 @@ amt::fit_rsf
   preds.exp = exp(preds[,-2])  
 
 
-## ----predict.plot, class.source = "fold-hide"---------------------------------------------
+## ----predict.plot, class.source = "fold-hide"----
 # Plot
   plot(newdata$dist.dev,preds.exp$fit,type="l",lwd=3,xlab="Distance to Development (Scaled)",
        ylab="Relative Intensity of Selection")
@@ -257,7 +257,7 @@ amt::fit_rsf
   text(1.5,0.6, "Avoidance")
 
 
-## ----assumption1--------------------------------------------------------------------------
+## ----assumption1------------------------------
 # Create a new (small) set of available locations 
   n.avail.new = 50
   set.seed(215464)
@@ -290,7 +290,7 @@ amt::fit_rsf
   knitr::kable(coef.df)  
 
 
-## ----assumption2--------------------------------------------------------------------------
+## ----assumption2------------------------------
 
 # Lets use indidual 7's data
   indiv.data7 = sims[[7]]
@@ -321,13 +321,13 @@ amt::fit_rsf
   knitr::kable(coef.df)
 
 
-## ----assumption2.2------------------------------------------------------------------------
+## ----assumption2.2----------------------------
 # Compare measures of uncertainty
   summary(model1) # independent data
   summary(fit.replicated) # replicated (dependent) data
 
 
-## ----sensitiivity, cache=TRUE-------------------------------------------------------------
+## ----sensitiivity, cache=TRUE-----------------
 # Grab individual one's data
   indiv.dat1 = sims[[1]]
 
@@ -367,7 +367,7 @@ coef.save = data.frame(n.available,coef.save)
 colnames(coef.save) = c("N.Avail","Intercept","beta1","beta2","beta3")
 
 
-## ----plotting.sensitivity, fig.height=8, fig.width=6, class.source = "fold-hide"----------
+## ----plotting.sensitivity, fig.height=8, fig.width=6, class.source = "fold-hide"----
 par(mfrow=c(2,1))
 plot(coef.save$N.Avail, coef.save$beta1,lwd=3,type="l",col=2,ylim=c(-1.5,1.5),
      main="Slope Coefficients",
@@ -378,7 +378,7 @@ plot(coef.save$N.Avail, coef.save$Intercept,lwd=3,type="l",col=1,main="Intercept
      xlab="Number of Available Samples",ylab="Coefficient Estimate")
 
 
-## ----sensitiivity2, cache=TRUE,warnings=FALSE---------------------------------------------
+## ----sensitiivity2, cache=TRUE,warnings=FALSE----
 # Size of available samples per used locaiton
   n.avail2 = c(10,50,100,1000,2000,4000)
   
@@ -418,7 +418,7 @@ plot(coef.save$N.Avail, coef.save$Intercept,lwd=3,type="l",col=1,main="Intercept
   
 
 
-## ----plot.sensitive.org2, class.source = "fold-hide"--------------------------------------
+## ----plot.sensitive.org2, class.source = "fold-hide"----
 one = data.frame(N.Avail = rep(n.avail2,each = n.sample),
                  Sample = rep(1:n.sample,length(n.avail2)),
                  beta = coef.save[,1]
@@ -453,7 +453,7 @@ ggplot(plot.data, aes(N.Available.Sample, Coefficient.Estimate, fill=factor(Name
   geom_boxplot()
 
 
-## ----pooling,cache=TRUE-------------------------------------------------------------------
+## ----pooling,cache=TRUE-----------------------
 # Pooled model - no consideration of individual variability
   model.pool = glmmTMB(status ~ dist.dev + forest + shrub , 
                        family = binomial(), 
@@ -472,15 +472,15 @@ ggplot(plot.data, aes(N.Available.Sample, Coefficient.Estimate, fill=factor(Name
   summary(model.pool)
 
 
-## ----separate-----------------------------------------------------------------------------
+## ----separate---------------------------------
 summary(indiv.fit[[2]])
 
 
-## ----separate2----------------------------------------------------------------------------
+## ----separate2--------------------------------
 summary(indiv.fit[[20]])
 
 
-## ----estimate.pool.separate---------------------------------------------------------------
+## ----estimate.pool.separate-------------------
 # Extract pooled estimates with Confidence intervals
 pool.effect = broom.mixed::tidy(model.pool, effects = "fixed", conf.int = TRUE)
 
@@ -498,7 +498,7 @@ indiv.coef = lapply(indiv.fit,FUN=function(x){
   UCI = sapply(indiv.coef,"[[",3)
 
 
-## ----plot.pool.separate, class.source = "fold-hide"---------------------------------------
+## ----plot.pool.separate, class.source = "fold-hide"----
 layout(matrix(c(1,2), nrow = 1, ncol = 2, byrow = TRUE),
        width=c(2,1)
        )
@@ -544,12 +544,12 @@ plotCI(c(1,1,1),y=pool.effect$estimate[2:4],
        )
 
 
-## ----power`-------------------------------------------------------------------------------
+## ----power`-----------------------------------
 S = covs[[1]]
 values(S) = scale(values(S))  
 
 
-## ----power2, fig.height=4, fig.width=6----------------------------------------------------
+## ----power2, fig.height=4, fig.width=6--------
 # Create habitat selection function values
 # We will use a slope of -0.2 for our spatial covariate
   beta = matrix(c(1,-0.2),
@@ -572,13 +572,13 @@ values(S) = scale(values(S))
   plot(S.HSF, main = "Relative Intensity of Selection")
 
 
-## ----power3-------------------------------------------------------------------------------
+## ----power3-----------------------------------
 # Define Inputs
   alpha = 0.05
   p_val = 0.05
 
 
-## ----power4-------------------------------------------------------------------------------
+## ----power4-----------------------------------
 N.used = sample.size.used.locs(alpha = alpha, 
                                p_val = p_val,
                                HSF.True = S.HSF,
@@ -588,7 +588,7 @@ N.used = sample.size.used.locs(alpha = alpha,
 N.used$Nalphapbetas
 
 
-## ----power5-------------------------------------------------------------------------------
+## ----power5-----------------------------------
   n.combs =  20
   alpha = seq(0.0001,0.3,length.out = n.combs)
   N.used = rep(0,n.combs)
@@ -604,11 +604,11 @@ N.used$Nalphapbetas
   }
 
 
-## ----power.plot1, class.source = "fold-hide"----------------------------------------------
+## ----power.plot1, class.source = "fold-hide"----
   plot(alpha,N.used,col=2,type="l",lwd=3,xlab="Type I Error Rate",ylab="Sample Size of Used Locations Needed")
 
 
-## ----power7-------------------------------------------------------------------------------
+## ----power7-----------------------------------
   n.combs =  40
   N.used = rep(0,n.combs)
   beta.combs=seq(-2,2,length.out=n.combs)
@@ -632,11 +632,11 @@ N.used$Nalphapbetas
   }
 
 
-## ----power.plot2, class.source = "fold-hide"----------------------------------------------
+## ----power.plot2, class.source = "fold-hide"----
   plot(beta.combs,N.used,col=2,type="b",lwd=3,xlab="Coefficient",ylab="Sample Size of Used Locations Needed")
 
 
-## ----power9, cache=TRUE-------------------------------------------------------------------
+## ----power9, cache=TRUE-----------------------
   n.combs = 20
   n.reps = 30
   sd.combs = seq(0.1,0.5,length.out = n.combs)
@@ -684,7 +684,7 @@ N.used$Nalphapbetas
   }
 
 
-## ----power.plot3, class.source = "fold-hide"----------------------------------------------
+## ----power.plot3, class.source = "fold-hide"----
   N.used.plot = data.frame(N.used = N.used,
                            N.variance = N.variance,
                            sd = rep(sd.combs,each=n.reps)
@@ -693,7 +693,7 @@ N.used$Nalphapbetas
 plot(N.used.plot$N.variance,N.used.plot$N.used,lwd=3,col=2,type="l",xlab="Landscape Complexity",ylab="Sample Size of Used Locations Needed")
 
 
-## ----boot.setup---------------------------------------------------------------------------
+## ----boot.setup-------------------------------
   coef.list = lapply(indiv.fit,FUN=function(x){fixef(x)[[1]]})
   
   coef.df=do.call(rbind.data.frame, coef.list)
@@ -709,7 +709,7 @@ plot(N.used.plot$N.variance,N.used.plot$N.used,lwd=3,col=2,type="l",xlab="Landsc
   coef.df$freq = 1
 
 
-## ----boot---------------------------------------------------------------------------------
+## ----boot-------------------------------------
 #How many bootstraps to do? More will lead to results with less error
   nboot = 1000
 
@@ -731,12 +731,12 @@ plot(N.used.plot$N.variance,N.used.plot$N.used,lwd=3,col=2,type="l",xlab="Landsc
   }
 
 
-## ----boot.summary-------------------------------------------------------------------------
+## ----boot.summary-----------------------------
   boot.pop.esimates=mean_ci_boot(boot)
   knitr::kable(boot.pop.esimates)
 
 
-## ----random.intercept, cache=TRUE---------------------------------------------------------
+## ----random.intercept, cache=TRUE-------------
 # Setup HSF with logistic regression approximation - random intercept model
 # Do not fit the model
    re_int = glmmTMB(status ~ dist.dev + forest + shrub  + (1|ID), 
@@ -755,7 +755,7 @@ plot(N.used.plot$N.variance,N.used.plot$N.used,lwd=3,col=2,type="l",xlab="Landsc
   re_int = glmmTMB:::fitTMB(re_int)
 
 
-## ----examine.random.intercept.model-------------------------------------------------------
+## ----examine.random.intercept.model-----------
 # The fixed components - these are the population level (across individual) effects. 
   fixef(re_int)
   
@@ -763,12 +763,12 @@ plot(N.used.plot$N.variance,N.used.plot$N.used,lwd=3,col=2,type="l",xlab="Landsc
   ranef(re_int)
 
 
-## ----examine.random.intercept.model2------------------------------------------------------
+## ----examine.random.intercept.model2----------
 # Summarize results  
   summary(re_int)
 
 
-## ----alt.RE.intercept---------------------------------------------------------------------
+## ----alt.RE.intercept-------------------------
 # Make ID a factor
   sims2$ID=as.factor(sims2$ID)
 
@@ -785,15 +785,15 @@ plot(N.used.plot$N.variance,N.used.plot$N.used,lwd=3,col=2,type="l",xlab="Landsc
   )
 
 
-## ----fix.re.compare1----------------------------------------------------------------------
+## ----fix.re.compare1--------------------------
 kable(summary(re_int)[[6]][[1]][2:4,])
 
 
-## ----fix.re.compare2----------------------------------------------------------------------
+## ----fix.re.compare2--------------------------
 kable(summary(fix_int)[[6]][[1]][(n.indiv+1):(n.indiv+1+2),])
 
 
-## ----fix.re.compare3----------------------------------------------------------------------
+## ----fix.re.compare3--------------------------
 int.re = ranef(re_int)[[1]][[1]]
 
 int.fe = c(summary(fix_int)[[6]][[1]][1,1]+
@@ -803,7 +803,7 @@ int.fe = c(summary(fix_int)[[6]][[1]][1,1]+
 kable(round(data.frame(individual = 1:20,int.fe=int.fe,int.re=int.re),digits=2))
 
 
-## ----model2, cache=TRUE-------------------------------------------------------------------
+## ----model2, cache=TRUE-----------------------
 #Fit RSF with intercept and slopes with random effect
   re_int_slopes =  glmmTMB(status ~ dist.dev + forest + shrub  + 
                                      (1|ID) + (0+dist.dev|ID) +
@@ -824,22 +824,22 @@ kable(round(data.frame(individual = 1:20,int.fe=int.fe,int.re=int.re),digits=2))
   re_int_slopes = glmmTMB:::fitTMB(re_int_slopes)
 
 
-## ----RE.results.fixed---------------------------------------------------------------------
+## ----RE.results.fixed-------------------------
   fixef(re_int_slopes)
   broom.mixed::tidy(re_int_slopes, effects = "fixed", conf.int = TRUE)[-1,c(3,4,8,9)]
 
 
-## ----RE.results.random--------------------------------------------------------------------
+## ----RE.results.random------------------------
   ranef(re_int_slopes)
   broom.mixed::tidy(re_int_slopes, effects = "ran_vals", conf.int = TRUE)[-c(1:20),c(5,6,8,9)]
 
 
 
-## ----RE.results---------------------------------------------------------------------------
+## ----RE.results-------------------------------
 summary(re_int_slopes)
 
 
-## ----RE.est.forest.indiv.pop--------------------------------------------------------------
+## ----RE.est.forest.indiv.pop------------------
   indiv.coef.popModel = broom.mixed::tidy(re_int_slopes, 
                                           effects = "ran_vals", 
                                           conf.int = TRUE)
@@ -857,7 +857,7 @@ summary(re_int_slopes)
   pop.coef.popModel=pop.coef.popModel[3,c(4,8,9)]
 
 
-## ----RE.plot.forest.indiv.pop, class.source = "fold-hide"---------------------------------
+## ----RE.plot.forest.indiv.pop, class.source = "fold-hide"----
 #Plot
   plotCI(x = 1:20,
          y = indiv.forest.popModel$estimate,
@@ -870,7 +870,7 @@ summary(re_int_slopes)
   abline(h=pop.coef.popModel$conf.high,lwd=3,col=2,lty=4)
 
 
-## ----power.population1,cache=TRUE---------------------------------------------------------
+## ----power.population1,cache=TRUE-------------
 #Number of individuals
   M = 30
   
@@ -922,7 +922,7 @@ for(i in 1:M){
 paste("M (tracked individuals) should be greater than or equal to ", round(Eq8,digits=0))
 
 
-## ----power.population2,cache=TRUE, class.source = "fold-hide"-----------------------------
+## ----power.population2,cache=TRUE, class.source = "fold-hide"----
   M = 30
   
   beta_mu = seq(0.1,0.75,length.out=10)
@@ -969,11 +969,11 @@ for(z in 1:length(beta_mu)){
 }#end z loop
 
 
-## ----power.pop.plot-----------------------------------------------------------------------
+## ----power.pop.plot---------------------------
 plot(beta_mu,min.indiv,ylab="Minimum Number of Individuals Tracked",lwd=3,col=4,type="b")
 
 
-## ----power.population3, class.source = "fold-hide"----------------------------------------
+## ----power.population3, class.source = "fold-hide"----
   M = 30
   
   beta_mu = 0.2
@@ -1019,11 +1019,11 @@ for(z in 1:length(beta_s)){
 }#end z loop
 
 
-## ----power.pop.plot2----------------------------------------------------------------------
+## ----power.pop.plot2--------------------------
 plot(beta_s2,min.indiv,ylab="Minimum Number of Individuals Tracked",lwd=3,col=4,type="b")
 
 
-## ----behav.sim, class.source = "fold-hide"------------------------------------------------
+## ----behav.sim, class.source = "fold-hide"----
 
 # Setup simulation input where there is more data from the second behavior
  n.used.behav1 = 200
@@ -1064,7 +1064,7 @@ plot(beta_s2,min.indiv,ylab="Minimum Number of Individuals Tracked",lwd=3,col=4,
                       )  
 
 
-## ----behav.fit----------------------------------------------------------------------------
+## ----behav.fit--------------------------------
   model.ignore.behav = glmmTMB::glmmTMB(status ~ forest, 
                                         family = binomial(), 
                                         data = data.ignore 
@@ -1072,7 +1072,7 @@ plot(beta_s2,min.indiv,ylab="Minimum Number of Individuals Tracked",lwd=3,col=4,
   summary(model.ignore.behav)
 
 
-## ----packages.cite, eval=TRUE, echo=FALSE-------------------------------------------------
+## ----packages.cite, eval=TRUE, echo=FALSE-----
   pkgs = cite_packages(output = "table", out.dir = ".",out.format ="pdf")
   knitr::kable(pkgs)
 

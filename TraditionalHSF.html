@@ -11,7 +11,7 @@
 
 <meta name="author" content="Brian D. Gerber, Casey Setash, Jacob S. Ivan. and Joseph M. Northrup" />
 
-<meta name="date" content="2024-01-10" />
+<meta name="date" content="2025-06-17" />
 
 <title>Traditional Habitat Selection   Guidance</title>
 
@@ -1571,7 +1571,7 @@ border-radius: 0px;
 Guidance</h1>
 <h4 class="author">Brian D. Gerber, Casey Setash, Jacob S. Ivan. and
 Joseph M. Northrup</h4>
-<h4 class="date">2024-01-10</h4>
+<h4 class="date">2025-06-17</h4>
 
 </div>
 
@@ -1878,10 +1878,23 @@ Binomial Regression Model) to approximate the IPP model, in which our
 estimated parameters will be the parameters within the habitat selection
 function. To understand the model, see equation 1 of <a href="https://doi.org/10.1002/ecy.2953">Gerber and Northrup,
 2020</a>.</p>
+<p>It is also important to differentiate a habitat selection function
+from a habitat selection analysis. As mentioned above, a habit selection
+function is a component of the model we want to fit, while a habitat
+analysis refers to all the steps that are being considered; this
+includes, for example, how the data are setup, the model fit, the
+algorithms used, the inference or predictions from the model, and how
+the model is evaluated.</p>
 <p><br></p>
 </div>
-<div id="what-about-scale" class="section level3" number="3.4">
-<h3><span class="header-section-number">3.4</span> What about
+<div id="habitat-selection-function-or-resource-selection-function" class="section level3" number="3.4">
+<h3><span class="header-section-number">3.4</span> ‘Habitat selection
+function’ or ‘resource selection function’?</h3>
+<p>Definitions only.</p>
+<p><br></p>
+</div>
+<div id="what-about-scale" class="section level3" number="3.5">
+<h3><span class="header-section-number">3.5</span> What about
 scale?</h3>
 <p>Definitions only.</p>
 <p>In our data setup and analysis we will be estimating habitat
@@ -1902,12 +1915,6 @@ assumed independence between consecutive spatial locations (e.g., kernel
 density estimation) or whether spatial autocorrelation is due to a
 high-frequency of sampling (e.g., short fix interval between relocations
 relative to the animals speed; movement-based kernel estimator).</p>
-<p><br></p>
-</div>
-<div id="why-habitat-selection-function-and-not-resource-selection-function" class="section level3" number="3.5">
-<h3><span class="header-section-number">3.5</span> Why ‘habitat
-selection function’ and not ‘resource selection function’?</h3>
-<p>Definitions only.</p>
 <p><br></p>
 </div>
 <div id="considering-objectives-and-data-collection" class="section level3" number="3.6">
@@ -1938,9 +1945,9 @@ measures of uncertainty are reliable (<a href="https://doi.org/10.32942/X2Z01P">
 et al. 2021</a>).</p>
 <p><br></p>
 </div>
-<div id="what-are-habitat-selection-functions-used-for" class="section level3" number="3.7">
-<h3><span class="header-section-number">3.7</span> What are
-habitat-selection functions used for?</h3>
+<div id="what-is-the-scientific-goal-of-implementing-a-habitat-selection-function" class="section level3" number="3.7">
+<h3><span class="header-section-number">3.7</span> What is the
+scientific goal of implementing a habitat-selection function?</h3>
 <p>In this section, we discuss some mechanics of inference and
 prediction, as in interpreting coefficients and predicting relative
 habitat selection. We will walk through the basics here, but refer the
@@ -2076,7 +2083,7 @@ function in the <code>stats</code> package as:</p>
 ##     class(m) &lt;- c(&quot;fit_logit&quot;, &quot;glm&quot;, class(m))
 ##     m
 ## }
-## &lt;bytecode: 0x00000218a7561270&gt;
+## &lt;bytecode: 0x000001b72a4674d8&gt;
 ## &lt;environment: namespace:amt&gt;</code></pre>
 <p><br></p>
 </div>
@@ -2181,9 +2188,9 @@ to predict relative habitat selection that is mapped.</p>
 <p><br></p>
 </div>
 </div>
-<div id="traditional-hsf-or-ssf" class="section level3" number="3.8">
-<h3><span class="header-section-number">3.8</span> Traditional HSF or
-SSF?</h3>
+<div id="traditional-habitat-selection-function-hsf-or-step-selection-function-ssf" class="section level3" number="3.8">
+<h3><span class="header-section-number">3.8</span> Traditional habitat
+selection function (HSF) or step-selection function (SSF)?</h3>
 <p>In fitting these data using a traditional HSF, we are making two
 important assumptions. First, we are assuming that the available
 locations for an individual are accessible and could be used if the
