@@ -502,7 +502,7 @@ amt::fit_rsf
 ##     class(m) <- c("fit_logit", "glm", class(m))
 ##     m
 ## }
-## <bytecode: 0x000001b72a4674d8>
+## <bytecode: 0x00000237297814d8>
 ## <environment: namespace:amt>
 ```
 
@@ -1434,7 +1434,7 @@ While we are using common language in describing the models and model fitting pr
 ## 20   -3.267983
 ```
 
-Notice the lack of variability in these estimated individual differences from the overall mean intercept. The reason for this is because we simulated data with the same number of used and available locations, therefore the ration of used to available is the same. These estimates are likely to be  more variable when you have different used sample sizes per individual (total individual animal locations) and are applying the same ratio of available samples. There are many reasons individuals end up having a different number of locations, such as battery life. 
+Notice the lack of variability in these estimated individual differences from the overall mean intercept. The reason for this is because we simulated data with the same number of used and available locations, therefore the ratio of used to available is the same. These estimates are likely to be  more variable when you have different used sample sizes per individual (total individual animal locations) and are applying the same ratio of available samples. There are many reasons individuals end up having a different number of locations, such as battery life. 
 
 
 ``` r
@@ -1474,7 +1474,7 @@ Notice the lack of variability in these estimated individual differences from th
 
 ##### Alternative to Random intercept only model
 
-The use of random effects is really not particularly useful. We are really looking to estimate slopes across all individuals (pooling) while allowing the intercepts by individual to vary to accomadate different sample sizes. We can accomplish the same thing using a fixed-effect only model and thus not need to fix any random effect variance. Specifically, we can do that by setting up a design matrix using contrast sums, also know as effecting coding.
+The use of random effects is really not particularly useful. We are really looking to estimate slopes across all individuals (pooling) while allowing the intercepts by individual to vary to accommodate different sample sizes. We can accomplish the same thing using a fixed-effect only model and thus not need to fix any random effect variance. Specifically, we can do that by setting up a design matrix using contrast sums, also know as effecting coding.
 
 
 ``` r
